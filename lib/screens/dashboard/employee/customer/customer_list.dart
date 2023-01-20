@@ -20,6 +20,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   double _fontSize_Title = 11;
   double _fontSize_value = 15;
 
+  double sizeboxsize = 12;
+  double _fontSize_Label = 9;
+  int label_color = 0xff4F4F4F; //0x66666666;
+  int title_color = 0xff362d8b;
+
   @override
   void initState() {
     super.initState();
@@ -167,192 +172,503 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
             ],
           ),
           children: <Widget>[
-            Container(
-              padding:
-                  EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
-              margin: EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Container(
-                            child: Column(
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Container(
+                    margin: EdgeInsets.all(20),
+                    child: Container(
+                        margin: EdgeInsets.only(left: 10),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Type",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("Type",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.CustomerType ==
+                                                                  ""
+                                                              ? "N/A"
+                                                              : model.CustomerType
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("Source.  ",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.Source.toString() ==
+                                                                  ""
+                                                              ? "N/A"
+                                                              : model.Source
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: sizeboxsize,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("Email",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.Email == ""
+                                                              ? "N/A"
+                                                              : model.Email
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: sizeboxsize,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("Address",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.Address == ""
+                                                              ? "N/A"
+                                                              : model.CustomerType
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: sizeboxsize,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("City",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.City == ""
+                                                              ? "N/A"
+                                                              : model.City
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("State",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.State == ""
+                                                              ? "N/A"
+                                                              : model.State
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: sizeboxsize,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("Country",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.Country == ""
+                                                              ? "N/A"
+                                                              : model.Country
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("PinCode",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.Pincode == ""
+                                                              ? "N/A"
+                                                              : model.Pincode
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: sizeboxsize,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("City",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.City == ""
+                                                              ? "N/A"
+                                                              : model.City
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("CreatedDate",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.CreatedDate ==
+                                                                  ""
+                                                              ? "N/A"
+                                                              : model.CreatedDate
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            Text(model.CustomerType,
-                                style: TextStyle(fontSize: _fontSize_value))
                           ],
-                        )),
-                      ),
-                      SizedBox(
-                        width: 40,
-                      ),
-                      Flexible(
-                        child: Container(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Source",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
-                            ),
-                            Text(model.Source,
-                                style: TextStyle(fontSize: _fontSize_value))
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Container(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Email",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
-                            ),
-                            Text(model.Email,
-                                style: TextStyle(fontSize: _fontSize_value))
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Container(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Address",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
-                            ),
-                            Text(model.Address,
-                                style: TextStyle(fontSize: _fontSize_value))
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Container(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "City",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
-                            ),
-                            Text(model.City,
-                                style: TextStyle(fontSize: _fontSize_value))
-                          ],
-                        )),
-                      ),
-                      SizedBox(
-                        width: 40,
-                      ),
-                      Flexible(
-                        child: Container(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "State",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
-                            ),
-                            Text(model.State,
-                                style: TextStyle(fontSize: _fontSize_value))
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Container(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Country",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
-                            ),
-                            Text(model.Country,
-                                style: TextStyle(fontSize: _fontSize_value))
-                          ],
-                        )),
-                      ),
-                      SizedBox(
-                        width: 40,
-                      ),
-                      Flexible(
-                        child: Container(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "PinCode",
-                              style: TextStyle(
-                                  fontSize: _fontSize_Title,
-                                  color: colorPrimary),
-                            ),
-                            Text(model.Pincode,
-                                style: TextStyle(fontSize: _fontSize_value))
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                ],
+                        ))),
               ),
             ),
             Divider(
