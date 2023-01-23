@@ -6,6 +6,7 @@ class SharedPrefHelper {
 
   ///key names for preference data storage
   static const String IS_LOGGED_IN = "logged_in";
+  static const String IS_LOGGED_IN_USER_ID = "logged_in_ID";
 
   SharedPrefHelper(this.prefs);
 
@@ -55,9 +56,5 @@ class SharedPrefHelper {
       return prefs.getInt(key);
     }
     return defaultValue;
-  }
-
-  bool isLogIn() {
-    return getBool(IS_LOGGED_IN) ?? false;
   }
 }

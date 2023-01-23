@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
+import 'package:minicrm/screens/dashboard/employee/product_master/master_product_list.dart';
 import 'package:minicrm/screens/login_screen/login_screen.dart';
 import 'package:minicrm/utils/general_utils.dart';
 import 'package:minicrm/utils/shared_pref_helper.dart';
@@ -22,7 +23,7 @@ class _EmployeeDashBoardState extends State<EmployeeDashBoard> {
           InkWell(
               onTap: () {
                 SharedPrefHelper.instance
-                    .putBool(SharedPrefHelper.IS_LOGGED_IN, false);
+                    .putString(SharedPrefHelper.IS_LOGGED_IN, "");
                 navigateTo(context, LoginPage.routeName, clearAllStack: true);
               },
               child: Container(
@@ -150,7 +151,7 @@ class _EmployeeDashBoardState extends State<EmployeeDashBoard> {
                       onTap: () {
                         showCommonDialogWithSingleOption(context, "Coming Soon",
                             positiveButtonTitle: "OK");
-                        // navigateTo(context, CustomerListScreen.routeName);
+                        navigateTo(context, GeneralProductListScreen.routeName);
                       },
                       child: Column(
                         children: [
@@ -158,7 +159,7 @@ class _EmployeeDashBoardState extends State<EmployeeDashBoard> {
                             Icons.pages_rounded,
                             size: 50,
                           ),
-                          Text("Daily Activity")
+                          Text("Product")
                         ],
                       )),
                 ),

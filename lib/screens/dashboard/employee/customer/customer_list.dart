@@ -4,6 +4,7 @@ import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
 import 'package:minicrm/resource/color_resource.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_add_edit.dart';
+import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
 import 'package:minicrm/utils/general_utils.dart';
 
 class CustomerListScreen extends StatefulWidget {
@@ -17,6 +18,8 @@ class CustomerListScreen extends StatefulWidget {
 
 class _CustomerListScreenState extends State<CustomerListScreen> {
   List<CustomerModel> arr_CustomerList = [];
+  List<CustomerModel> temparr_CustomerList = [];
+
   double _fontSize_Title = 11;
   double _fontSize_value = 15;
 
@@ -34,26 +37,47 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Customer List"),
-      ),
-      body: arr_CustomerList.length != 0
-          ? ListView.builder(
-              itemBuilder: (context, index) {
-                return Items(index);
-                //return Text(arr_CustomerList[index].CustomerName);
-              },
-              itemCount: arr_CustomerList.length,
-            )
-          : Center(child: Text("No Customer Found")),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // Add your onPressed code here!
-          navigateTo(context, CustomerAddEdit.routeName);
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: colorPrimary,
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Customer List"),
+          actions: [
+            InkWell(
+                onTap: () {
+                  navigateTo(context, EmployeeDashBoard.routeName,
+                      clearAllStack: true);
+                },
+                child: Icon(Icons.home)),
+          ],
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Text("df"),
+            SearchTextField(),
+            arr_CustomerList.length != 0
+                ? Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return Items(index);
+                        //return Text(arr_CustomerList[index].CustomerName);
+                      },
+                      itemCount: arr_CustomerList.length,
+                    ),
+                  )
+                : Center(child: Text("No Customer Found")),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            // Add your onPressed code here!
+            navigateTo(context, CustomerAddEdit.routeName);
+          },
+          child: const Icon(Icons.add),
+          backgroundColor: colorPrimary,
+        ),
       ),
     );
   }
@@ -64,7 +88,9 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
 
   void getDetails() async {
     arr_CustomerList.clear();
+    temparr_CustomerList.clear();
     arr_CustomerList = await OfflineDbHelper.getInstance().getAllCustomer();
+    temparr_CustomerList = await OfflineDbHelper.getInstance().getAllCustomer();
     setState(() {});
   }
 
@@ -695,7 +721,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // _onTapOfEditCustomer(model);
+                          navigateTo(context, CustomerAddEdit.routeName,
+                                  arguments: AddUpdateCustomerArguments(model))
+                              .then((value) {
+                            getDetails();
+                          });
                         },
                         child: Row(
                           children: <Widget>[
@@ -721,8 +751,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                         width: 10,
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           // _onTapOfDeleteInquiry(model.customerID);
+                          await OfflineDbHelper.getInstance()
+                              .deleteCustomer(model.id);
+                          getDetails();
                         },
                         child: Row(
                           children: <Widget>[
@@ -755,5 +788,60 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
             )
           ],
         ));
+  }
+
+  Widget SearchTextField() {
+    return Container(
+      height: 60,
+      margin: EdgeInsets.all(10),
+      child: Card(
+        child: Container(
+          child: TextField(
+            onChanged: (value) {
+              setState(() {
+                SearchResult(value);
+              });
+            },
+            decoration: const InputDecoration(
+                contentPadding: EdgeInsets.only(left: 10, top: 15),
+                border: InputBorder.none,
+                // labelText: 'Search',
+                hintText: 'Tap to Search Customer',
+                suffixIcon: Icon(
+                  Icons.search,
+                  color: Color(0xff070241),
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void SearchResult(String enteredKeyword) {
+    List<CustomerModel> dummySearchList = [];
+    dummySearchList.addAll(arr_CustomerList);
+    if (enteredKeyword.isNotEmpty) {
+      List<CustomerModel> dummyListData = [];
+      dummySearchList.forEach((item) {
+        if (item.CustomerName.toLowerCase()
+            .contains(enteredKeyword.toLowerCase())) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        arr_CustomerList.clear();
+        arr_CustomerList.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        arr_CustomerList.clear();
+        arr_CustomerList.addAll(temparr_CustomerList);
+      });
+    }
+  }
+
+  Future<bool> _onBackPressed() {
+    navigateTo(context, EmployeeDashBoard.routeName, clearAllStack: true);
   }
 }

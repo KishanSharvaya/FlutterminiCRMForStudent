@@ -2,34 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
-import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
-import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
-import 'package:minicrm/utils/general_model/all_name_id.dart';
+import 'package:minicrm/screens/dashboard/customer/product_dashboard/customer_master_product_list.dart';
 import 'package:minicrm/utils/general_utils.dart';
+import 'package:minicrm/utils/shared_pref_helper.dart';
 
-class AddUpdateCustomerArguments {
-  // SearchDetails editModel;
-
-  CustomerModel editModel;
-  AddUpdateCustomerArguments(this.editModel);
-}
-
-class CustomerAddEdit extends StatefulWidget {
-  static const routeName = '/CustomerAddEdit';
-
-  final AddUpdateCustomerArguments arguments;
-
-  CustomerAddEdit(this.arguments);
+class UserProfileScreen extends StatefulWidget {
+  const UserProfileScreen({Key key}) : super(key: key);
 
   @override
-  State<CustomerAddEdit> createState() => _CustomerAddEditState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _CustomerAddEditState extends State<CustomerAddEdit> {
-  bool _obscuredText = true;
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  int custID = 0;
 
-  CustomerModel _editModel;
-  bool _isForUpdate = false;
+  List<CustomerModel> arr_customerModel = [];
+  bool _obscuredText = true;
 
   TextEditingController edt_customerName = TextEditingController();
   TextEditingController edt_Type = TextEditingController();
@@ -44,113 +32,71 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
   TextEditingController edt_country = TextEditingController();
   TextEditingController edt_pincode = TextEditingController();
 
-  List<ALL_Name_ID> arr_ALL_Name_ID_For_Source = [];
-  List<ALL_Name_ID> arr_ALL_Name_ID_For_Type = [];
-
   @override
   void initState() {
     super.initState();
-    BuildCustomerSource();
-    BuildCustomerType();
-    edt_customerName.text = "";
-    edt_Source.text = "";
-    edt_mobileNo1.text = "";
-    edt_mobileNo2.text = "";
-    edt_email.text = "";
-    edt_password.text = "";
-    edt_address.text = "";
-    edt_city.text = "";
-    edt_state.text = "";
-    edt_country.text = "";
-    edt_pincode.text = "";
-    edt_Type.text = "";
-
-    if (widget.arguments != null) {
-      _isForUpdate = true;
-      _editModel = widget.arguments.editModel;
-
-      fillData();
-    } else {
-      _isForUpdate = false;
-    }
+    custID =
+        SharedPrefHelper.instance.getInt(SharedPrefHelper.IS_LOGGED_IN_USER_ID);
+    getCustomerListFromDB();
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("CustomerAddEdit"),
-          actions: [
-            InkWell(
-                onTap: () {
-                  navigateTo(context, EmployeeDashBoard.routeName,
-                      clearAllStack: true);
-                },
-                child: Icon(Icons.home)),
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            CustomerName(),
+            SizedBox(
+              height: 20,
+            ),
+            MobileNo1(),
+            SizedBox(
+              height: 20,
+            ),
+            MobileNo2(),
+            SizedBox(
+              height: 20,
+            ),
+            EmailAddress(),
+            SizedBox(
+              height: 20,
+            ),
+            Password(),
+            SizedBox(
+              height: 20,
+            ),
+            Address(),
+            SizedBox(
+              height: 20,
+            ),
+            City(),
+            SizedBox(
+              height: 20,
+            ),
+            State(),
+            SizedBox(
+              height: 20,
+            ),
+            Country(),
+            SizedBox(
+              height: 20,
+            ),
+            PinCode(),
+            SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Submit(),
+            SizedBox(
+              height: 20,
+            ),
           ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              CustomerName(),
-              SizedBox(
-                height: 20,
-              ),
-              CustomerType(),
-              SizedBox(
-                height: 20,
-              ),
-              Source(),
-              SizedBox(
-                height: 20,
-              ),
-              MobileNo1(),
-              SizedBox(
-                height: 20,
-              ),
-              MobileNo2(),
-              SizedBox(
-                height: 20,
-              ),
-              EmailAddress(),
-              SizedBox(
-                height: 20,
-              ),
-              Password(),
-              SizedBox(
-                height: 20,
-              ),
-              Address(),
-              SizedBox(
-                height: 20,
-              ),
-              City(),
-              SizedBox(
-                height: 20,
-              ),
-              State(),
-              SizedBox(
-                height: 20,
-              ),
-              Country(),
-              SizedBox(
-                height: 20,
-              ),
-              PinCode(),
-              SizedBox(
-                height: 20,
-              ),
-              Submit(),
-              SizedBox(
-                height: 20,
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -166,56 +112,6 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
           border: OutlineInputBorder(),
           labelText: 'Customer Name',
           hintText: 'Enter Your Name',
-        ),
-      ),
-    );
-  }
-
-  Widget CustomerType() {
-    return InkWell(
-      onTap: () {
-        showcustomListdialogWithOnlyName(
-            values: arr_ALL_Name_ID_For_Type,
-            context1: context,
-            controller: edt_Type,
-            lable: "Customer Type");
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: 20, right: 20),
-        child: TextField(
-          enabled: false,
-          controller: edt_Type,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Customer Type',
-            hintText: 'Select Customer Type',
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget Source() {
-    return InkWell(
-      onTap: () {
-        showcustomListdialogWithOnlyName(
-            values: arr_ALL_Name_ID_For_Source,
-            context1: context,
-            controller: edt_Source,
-            lable: "Customer Source ");
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: 20, right: 20),
-        child: TextField(
-          enabled: false,
-          controller: edt_Source,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Customer Source',
-            hintText: 'Select Customer Source',
-          ),
         ),
       ),
     );
@@ -430,7 +326,7 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
-                  "Save",
+                  "Update",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ],
@@ -441,66 +337,11 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
     );
   }
 
-  BuildCustomerSource() {
-    arr_ALL_Name_ID_For_Source.clear();
-    for (var i = 0; i < 6; i++) {
-      ALL_Name_ID all_name_id = ALL_Name_ID();
-
-      if (i == 0) {
-        all_name_id.Name1 = "Walk in";
-      } else if (i == 1) {
-        all_name_id.Name1 = "Reference";
-      } else if (i == 2) {
-        all_name_id.Name1 = "By Mail";
-      } else if (i == 3) {
-        all_name_id.Name1 = "InProcess";
-      } else if (i == 4) {
-        all_name_id.Name1 = "TelePhonic";
-      } else if (i == 5) {
-        all_name_id.Name1 = "WebSite";
-      }
-      arr_ALL_Name_ID_For_Source.add(all_name_id);
-    }
-  }
-
-  BuildCustomerType() {
-    arr_ALL_Name_ID_For_Type.clear();
-    for (var i = 0; i < 2; i++) {
-      ALL_Name_ID all_name_id = ALL_Name_ID();
-
-      if (i == 0) {
-        all_name_id.Name1 = "customer";
-      } else if (i == 1) {
-        all_name_id.Name1 = "employee";
-      }
-      arr_ALL_Name_ID_For_Type.add(all_name_id);
-    }
-  }
-
   AddUpdateCustomer() async {
     final now = new DateTime.now();
     String currentDate = DateFormat.yMd().add_jm().format(now); // 28/03/2020
 
-    if (_isForUpdate == true) {
-      CustomerModel UpdatecustomerModel = CustomerModel(
-          edt_customerName.text,
-          edt_Source.text,
-          edt_mobileNo1.text,
-          edt_mobileNo2.text,
-          edt_email.text,
-          edt_password.text,
-          edt_address.text,
-          edt_city.text,
-          edt_state.text,
-          edt_country.text,
-          edt_pincode.text,
-          edt_Type.text,
-          currentDate,
-          id: _editModel.id);
-
-      await OfflineDbHelper.getInstance().updateCustomer(UpdatecustomerModel);
-    } else {
-      CustomerModel customerModel = CustomerModel(
+    CustomerModel UpdatecustomerModel = CustomerModel(
         edt_customerName.text,
         edt_Source.text,
         edt_mobileNo1.text,
@@ -514,32 +355,34 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
         edt_pincode.text,
         edt_Type.text,
         currentDate,
-      );
+        id: custID);
 
-      await OfflineDbHelper.getInstance().insertCustomer(customerModel);
-    }
+    await OfflineDbHelper.getInstance().updateCustomer(UpdatecustomerModel);
 
-    navigateTo(context, CustomerListScreen.routeName);
+    navigateTo(context, CustomerDashBoard.routeName);
   }
 
-  void fillData() {
-    edt_customerName.text = _editModel.CustomerName;
-    edt_Source.text = _editModel.Source;
-    edt_mobileNo1.text = _editModel.MobileNo1;
-    edt_mobileNo2.text = _editModel.MobileNo2;
-    edt_email.text = _editModel.Email;
-    edt_password.text = _editModel.Password;
-    edt_address.text = _editModel.Address;
-    edt_city.text = _editModel.City;
-    edt_state.text = _editModel.State;
-    edt_country.text = _editModel.Country;
-    edt_pincode.text = _editModel.Pincode;
-    edt_Type.text = _editModel.CustomerType;
-
-    edt_customerName.text = _editModel.CustomerName;
+  void getCustomerListFromDB() {
+    getDetails();
   }
 
-  Future<bool> _onBackPressed() {
-    navigateTo(context, CustomerListScreen.routeName, clearAllStack: true);
+  void getDetails() async {
+    arr_customerModel =
+        await OfflineDbHelper.getInstance().getOnlyCustomerDetails(custID);
+
+    edt_customerName.text = arr_customerModel[0].CustomerName;
+    edt_Source.text = arr_customerModel[0].Source;
+    edt_mobileNo1.text = arr_customerModel[0].MobileNo1;
+    edt_mobileNo2.text = arr_customerModel[0].MobileNo2;
+    edt_email.text = arr_customerModel[0].Email;
+    edt_password.text = arr_customerModel[0].Password;
+    edt_address.text = arr_customerModel[0].Address;
+    edt_city.text = arr_customerModel[0].City;
+    edt_state.text = arr_customerModel[0].State;
+    edt_country.text = arr_customerModel[0].Country;
+    edt_pincode.text = arr_customerModel[0].Pincode;
+    edt_Type.text = arr_customerModel[0].CustomerType;
+
+    setState(() {});
   }
 }

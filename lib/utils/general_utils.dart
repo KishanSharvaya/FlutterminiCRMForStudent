@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minicrm/resource/color_resource.dart';
+import 'package:minicrm/resource/dimen_resource.dart';
 import 'package:minicrm/utils/general_model/all_name_id.dart';
 
 Future navigateTo(BuildContext context, String routeName,
@@ -220,5 +221,54 @@ showcustomListdialogWithOnlyName(
         ],
       );
     },
+  );
+}
+
+Widget getCommonButton(Function onPressed, String text,
+    {Color textColor: colorWhite,
+    Color backGroundColor: colorPrimary,
+    double elevation: 0.0,
+    bool showOnlyBorder: false,
+    Color borderColor: colorPrimary,
+    double textSize: BUTTON_TEXT_FONT_SIZE,
+    double width: double.maxFinite,
+    double height: COMMON_BUTTON_HEIGHT,
+    double radius: COMMON_BUTTON_RADIUS}) {
+  if (!showOnlyBorder) {
+    borderColor = backGroundColor;
+  }
+  return Container(
+    width: width,
+    height: height,
+    child: /*RaisedButton(
+      onPressed: onPressed,
+      color: backGroundColor,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(radius)),
+          side: BorderSide(width: showOnlyBorder ? 2 : 0, color: borderColor)),
+      elevation: elevation,
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: baseTheme.textTheme.button
+            .copyWith(color: textColor, fontSize: textSize),
+      ),
+    ),*/
+
+        ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        fixedSize: Size(90, 15),
+        backgroundColor: backGroundColor,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(radius)),
+            side:
+                BorderSide(width: showOnlyBorder ? 2 : 0, color: borderColor)),
+      ),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+      ),
+    ),
   );
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:minicrm/Database/offline_db_helper.dart';
+import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
 import 'package:minicrm/resource/image_resource.dart';
+import 'package:minicrm/screens/dashboard/customer/product_dashboard/customer_master_product_list.dart';
 import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
+import 'package:minicrm/screens/login_screen/sign_up.dart';
 import 'package:minicrm/utils/general_utils.dart';
 import 'package:minicrm/utils/shared_pref_helper.dart';
 
@@ -25,6 +29,8 @@ class _LoginPageState extends State<LoginPage> {
 
   TextEditingController _userName = TextEditingController();
   TextEditingController _password = TextEditingController();
+
+  bool isinDB = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +66,16 @@ class _LoginPageState extends State<LoginPage> {
                       Flexible(
                         child: InkWell(
                           onTap: () {
-                            if (_userName.text == "student" &&
-                                _password.text == "student") {
-                              SharedPrefHelper.instance
-                                  .putBool(SharedPrefHelper.IS_LOGGED_IN, true);
-                              navigateTo(context, EmployeeDashBoard.routeName);
+                            if (_userName.text != "" && _password.text != "") {
+                              if (_userName.text == "admin" &&
+                                  _password.text == "admin") {
+                                SharedPrefHelper.instance.putString(
+                                    SharedPrefHelper.IS_LOGGED_IN, "admin");
+                                navigateTo(
+                                    context, EmployeeDashBoard.routeName);
+                              } else {
+                                checkfromDB();
+                              }
                             } else {
                               showCommonDialogWithSingleOption(context,
                                   "Oops, Your Credentials is Incorrect !",
@@ -91,22 +102,27 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       Flexible(
-                        child: Container(
-                          child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                              color: Colors.blue,
-                              child: Container(
-                                  width: 200,
-                                  height: 50,
-                                  padding: EdgeInsets.all(10),
-                                  child: Center(
-                                    child: Text(
-                                      "SignUp",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ))),
+                        child: InkWell(
+                          onTap: () {
+                            navigateTo(context, SignUpScreen.routeName);
+                          },
+                          child: Container(
+                            child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                color: Colors.blue,
+                                child: Container(
+                                    width: 200,
+                                    height: 50,
+                                    padding: EdgeInsets.all(10),
+                                    child: Center(
+                                      child: Text(
+                                        "SignUp",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ))),
+                          ),
                         ),
                       ),
                     ],
@@ -169,5 +185,41 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  checkfromDB() async {
+    List<CustomerModel> customerList =
+        await OfflineDbHelper.getInstance().getAllCustomer();
+
+    String customerType = "";
+    int custID = 0;
+
+    for (int i = 0; i < customerList.length; i++) {
+      print("sdfkfj" + customerList[i].Email);
+      if (_userName.text.trim().toLowerCase() ==
+              customerList[i].Email.trim().toLowerCase() &&
+          _password.text.trim() == customerList[i].Password.trim()) {
+        isinDB = true;
+        customerType = customerList[i].CustomerType;
+        custID = customerList[i].id;
+        break;
+      }
+    }
+
+    if (isinDB == true) {
+      SharedPrefHelper.instance
+          .putString(SharedPrefHelper.IS_LOGGED_IN, customerType);
+
+      SharedPrefHelper.instance
+          .putInt(SharedPrefHelper.IS_LOGGED_IN_USER_ID, custID);
+      if (customerType == "customer") {
+        navigateTo(context, CustomerDashBoard.routeName);
+      } else {
+        navigateTo(context, EmployeeDashBoard.routeName);
+      }
+    } else {
+      showCommonDialogWithSingleOption(context, "Incorrect Credential !",
+          positiveButtonTitle: "OK");
+    }
   }
 }

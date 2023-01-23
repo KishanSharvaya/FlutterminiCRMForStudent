@@ -2,37 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
-import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
-import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
+import 'package:minicrm/screens/login_screen/login_screen.dart';
 import 'package:minicrm/utils/general_model/all_name_id.dart';
 import 'package:minicrm/utils/general_utils.dart';
 
-class AddUpdateCustomerArguments {
-  // SearchDetails editModel;
-
-  CustomerModel editModel;
-  AddUpdateCustomerArguments(this.editModel);
-}
-
-class CustomerAddEdit extends StatefulWidget {
-  static const routeName = '/CustomerAddEdit';
-
-  final AddUpdateCustomerArguments arguments;
-
-  CustomerAddEdit(this.arguments);
+class SignUpScreen extends StatefulWidget {
+  static const routeName = '/SignUpScreen';
 
   @override
-  State<CustomerAddEdit> createState() => _CustomerAddEditState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _CustomerAddEditState extends State<CustomerAddEdit> {
+class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscuredText = true;
 
-  CustomerModel _editModel;
-  bool _isForUpdate = false;
-
   TextEditingController edt_customerName = TextEditingController();
-  TextEditingController edt_Type = TextEditingController();
   TextEditingController edt_Source = TextEditingController();
   TextEditingController edt_mobileNo1 = TextEditingController();
   TextEditingController edt_mobileNo2 = TextEditingController();
@@ -51,7 +35,6 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
   void initState() {
     super.initState();
     BuildCustomerSource();
-    BuildCustomerType();
     edt_customerName.text = "";
     edt_Source.text = "";
     edt_mobileNo1.text = "";
@@ -63,16 +46,6 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
     edt_state.text = "";
     edt_country.text = "";
     edt_pincode.text = "";
-    edt_Type.text = "";
-
-    if (widget.arguments != null) {
-      _isForUpdate = true;
-      _editModel = widget.arguments.editModel;
-
-      fillData();
-    } else {
-      _isForUpdate = false;
-    }
   }
 
   @override
@@ -81,12 +54,11 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
       onWillPop: _onBackPressed,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("CustomerAddEdit"),
+          title: Text("SignUp"),
           actions: [
             InkWell(
                 onTap: () {
-                  navigateTo(context, EmployeeDashBoard.routeName,
-                      clearAllStack: true);
+                  navigateTo(context, LoginPage.routeName, clearAllStack: true);
                 },
                 child: Icon(Icons.home)),
           ],
@@ -98,10 +70,6 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
                 height: 20,
               ),
               CustomerName(),
-              SizedBox(
-                height: 20,
-              ),
-              CustomerType(),
               SizedBox(
                 height: 20,
               ),
@@ -166,31 +134,6 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
           border: OutlineInputBorder(),
           labelText: 'Customer Name',
           hintText: 'Enter Your Name',
-        ),
-      ),
-    );
-  }
-
-  Widget CustomerType() {
-    return InkWell(
-      onTap: () {
-        showcustomListdialogWithOnlyName(
-            values: arr_ALL_Name_ID_For_Type,
-            context1: context,
-            controller: edt_Type,
-            lable: "Customer Type");
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: 20, right: 20),
-        child: TextField(
-          enabled: false,
-          controller: edt_Type,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Customer Type',
-            hintText: 'Select Customer Type',
-          ),
         ),
       ),
     );
@@ -379,34 +322,21 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
     return InkWell(
       onTap: () {
         if (edt_customerName.text != "") {
-          if (edt_Type.text != "") {
-            if (edt_mobileNo1.text != "") {
-              if (edt_email.text != "") {
-                if (edt_password.text != "") {
-                  if (edt_Type.text != "") {
-                    AddUpdateCustomer();
-                  } else {
-                    showCommonDialogWithSingleOption(
-                        context, "Customer Type is Required !",
-                        positiveButtonTitle: "OK");
-                  }
-                } else {
-                  showCommonDialogWithSingleOption(
-                      context, "Password is Required !",
-                      positiveButtonTitle: "OK");
-                }
+          if (edt_mobileNo1.text != "") {
+            if (edt_email.text != "") {
+              if (edt_password.text != "") {
+                AddUpdateCustomer();
               } else {
-                showCommonDialogWithSingleOption(context, "Email is Required !",
+                showCommonDialogWithSingleOption(
+                    context, "Password is Required !",
                     positiveButtonTitle: "OK");
               }
             } else {
-              showCommonDialogWithSingleOption(
-                  context, "MobileNo1 is Required !",
+              showCommonDialogWithSingleOption(context, "Email is Required !",
                   positiveButtonTitle: "OK");
             }
           } else {
-            showCommonDialogWithSingleOption(
-                context, "Customer Type is Required !",
+            showCommonDialogWithSingleOption(context, "MobileNo1 is Required !",
                 positiveButtonTitle: "OK");
           }
         } else {
@@ -430,7 +360,7 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
-                  "Save",
+                  "Register",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ],
@@ -463,83 +393,31 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
     }
   }
 
-  BuildCustomerType() {
-    arr_ALL_Name_ID_For_Type.clear();
-    for (var i = 0; i < 2; i++) {
-      ALL_Name_ID all_name_id = ALL_Name_ID();
-
-      if (i == 0) {
-        all_name_id.Name1 = "customer";
-      } else if (i == 1) {
-        all_name_id.Name1 = "employee";
-      }
-      arr_ALL_Name_ID_For_Type.add(all_name_id);
-    }
-  }
-
   AddUpdateCustomer() async {
     final now = new DateTime.now();
     String currentDate = DateFormat.yMd().add_jm().format(now); // 28/03/2020
 
-    if (_isForUpdate == true) {
-      CustomerModel UpdatecustomerModel = CustomerModel(
-          edt_customerName.text,
-          edt_Source.text,
-          edt_mobileNo1.text,
-          edt_mobileNo2.text,
-          edt_email.text,
-          edt_password.text,
-          edt_address.text,
-          edt_city.text,
-          edt_state.text,
-          edt_country.text,
-          edt_pincode.text,
-          edt_Type.text,
-          currentDate,
-          id: _editModel.id);
+    CustomerModel customerModel = CustomerModel(
+      edt_customerName.text,
+      edt_Source.text,
+      edt_mobileNo1.text,
+      edt_mobileNo2.text,
+      edt_email.text,
+      edt_password.text,
+      edt_address.text,
+      edt_city.text,
+      edt_state.text,
+      edt_country.text,
+      edt_pincode.text,
+      "customer",
+      currentDate,
+    );
 
-      await OfflineDbHelper.getInstance().updateCustomer(UpdatecustomerModel);
-    } else {
-      CustomerModel customerModel = CustomerModel(
-        edt_customerName.text,
-        edt_Source.text,
-        edt_mobileNo1.text,
-        edt_mobileNo2.text,
-        edt_email.text,
-        edt_password.text,
-        edt_address.text,
-        edt_city.text,
-        edt_state.text,
-        edt_country.text,
-        edt_pincode.text,
-        edt_Type.text,
-        currentDate,
-      );
-
-      await OfflineDbHelper.getInstance().insertCustomer(customerModel);
-    }
-
-    navigateTo(context, CustomerListScreen.routeName);
-  }
-
-  void fillData() {
-    edt_customerName.text = _editModel.CustomerName;
-    edt_Source.text = _editModel.Source;
-    edt_mobileNo1.text = _editModel.MobileNo1;
-    edt_mobileNo2.text = _editModel.MobileNo2;
-    edt_email.text = _editModel.Email;
-    edt_password.text = _editModel.Password;
-    edt_address.text = _editModel.Address;
-    edt_city.text = _editModel.City;
-    edt_state.text = _editModel.State;
-    edt_country.text = _editModel.Country;
-    edt_pincode.text = _editModel.Pincode;
-    edt_Type.text = _editModel.CustomerType;
-
-    edt_customerName.text = _editModel.CustomerName;
+    await OfflineDbHelper.getInstance().insertCustomer(customerModel);
+    navigateTo(context, LoginPage.routeName, clearAllStack: true);
   }
 
   Future<bool> _onBackPressed() {
-    navigateTo(context, CustomerListScreen.routeName, clearAllStack: true);
+    navigateTo(context, LoginPage.routeName, clearAllStack: true);
   }
 }

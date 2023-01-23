@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
+import 'package:minicrm/screens/dashboard/customer/product_dashboard/customer_master_product_list.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_add_edit.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
 import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
+import 'package:minicrm/screens/dashboard/employee/product_master/master_product_add_edit.dart';
+import 'package:minicrm/screens/dashboard/employee/product_master/master_product_list.dart';
 import 'package:minicrm/screens/login_screen/login_screen.dart';
 import 'package:minicrm/utils/general_utils.dart';
 import 'package:minicrm/utils/shared_pref_helper.dart';
+
+import 'screens/login_screen/sign_up.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,12 +35,23 @@ class MyApp extends StatefulWidget {
     switch (settings.name) {
       case LoginPage.routeName:
         return getMaterialPageRoute(LoginPage());
+      case SignUpScreen.routeName:
+        return getMaterialPageRoute(SignUpScreen());
+      case CustomerDashBoard.routeName:
+        return getMaterialPageRoute(CustomerDashBoard());
+      //
       case EmployeeDashBoard.routeName:
         return getMaterialPageRoute(EmployeeDashBoard());
       case CustomerListScreen.routeName:
         return getMaterialPageRoute(CustomerListScreen());
       case CustomerAddEdit.routeName:
-        return getMaterialPageRoute(CustomerAddEdit());
+        return getMaterialPageRoute(CustomerAddEdit(settings.arguments));
+      case GeneralProductListScreen.routeName:
+        return getMaterialPageRoute(GeneralProductListScreen());
+
+      case GeneralProductAddEdit.routeName:
+        return getMaterialPageRoute(GeneralProductAddEdit(settings.arguments));
+      //
       default:
         return null;
     }
@@ -92,7 +108,14 @@ class _MyAppState extends State<MyApp> {
       return FirstScreen.routeName;
     }*/
 
-    if (SharedPrefHelper.instance.isLogIn()) {
+    if (SharedPrefHelper.instance.getString(SharedPrefHelper.IS_LOGGED_IN) ==
+        "customer") {
+      return CustomerDashBoard.routeName;
+    } else if (SharedPrefHelper.instance
+                .getString(SharedPrefHelper.IS_LOGGED_IN) ==
+            "admin" ||
+        SharedPrefHelper.instance.getString(SharedPrefHelper.IS_LOGGED_IN) ==
+            "employee") {
       return EmployeeDashBoard.routeName;
     }
 
