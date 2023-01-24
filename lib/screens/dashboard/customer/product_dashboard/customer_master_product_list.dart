@@ -144,6 +144,5 @@ class _CustomerDashBoardState extends State<CustomerDashBoard> {
         ),
       ),
     );
-
   }
 }
