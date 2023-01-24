@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
+import 'package:minicrm/Database/table_models/product/cart_product_table.dart';
 import 'package:minicrm/Database/table_models/product/genral_product_table.dart';
 import 'package:minicrm/resource/color_resource.dart';
 import 'package:minicrm/utils/full_screen_image.dart';
 import 'package:minicrm/utils/general_utils.dart';
+import 'package:minicrm/utils/shared_pref_helper.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({Key key}) : super(key: key);
@@ -27,10 +31,20 @@ class _DashBoardState extends State<DashBoard> {
 
   List<ProductModel> arr_CustomerList = [];
   List<ProductModel> temparr_CustomerList = [];
+
+  int custID = 0;
+
+  FToast fToast;
+
   @override
   void initState() {
     super.initState();
 
+    fToast = FToast();
+    fToast.init(context);
+
+    custID =
+        SharedPrefHelper.instance.getInt(SharedPrefHelper.IS_LOGGED_IN_USER_ID);
     getCustomerListFromDB();
   }
 
@@ -138,7 +152,86 @@ class _DashBoardState extends State<DashBoard> {
                               SizedBox(
                                 height: 10,
                               ),
-                              getCommonButton(() {}, "Add to Cart",
+                              getCommonButton(() async {
+                                List<CartProductModel> arr_CartList =
+                                    await OfflineDbHelper.getInstance()
+                                        .getAllCartProduct();
+
+                                bool isExistinCart = false;
+                                if (arr_CartList != null) {
+                                  for (int i = 0;
+                                      i < arr_CartList.length;
+                                      i++) {
+                                    if (model.ProductName ==
+                                        arr_CartList[i].ProductName) {
+                                      isExistinCart = true;
+                                      break;
+                                    }
+                                  }
+
+                                  if (isExistinCart == false) {
+                                    final now = new DateTime.now();
+
+                                    //double NetAmount = double.parse(model.UnitPrice) * 1;
+                                    String currentDate = DateFormat.yMd()
+                                        .add_jm()
+                                        .format(now); // 28/03/2020
+
+                                    CartProductModel productCartModel =
+                                        CartProductModel(
+                                            custID,
+                                            model.ProductName,
+                                            1,
+                                            model.UnitPrice,
+                                            model.Specification,
+                                            model.Unit,
+                                            model.UnitPrice,
+                                            model.image,
+                                            currentDate);
+                                    await OfflineDbHelper.getInstance()
+                                        .insertCartProduct(productCartModel);
+                                    fToast.showToast(
+                                      child: showCustomToast(
+                                          Title: "Item is Added to Cart !"),
+                                      gravity: ToastGravity.BOTTOM,
+                                      toastDuration: Duration(seconds: 2),
+                                    );
+                                    setState(() {});
+                                  } else {
+                                    showCommonDialogWithSingleOption(
+                                        context, "Product is Already In Cart !",
+                                        positiveButtonTitle: "OK");
+                                  }
+                                } else {
+                                  final now = new DateTime.now();
+
+                                  //double NetAmount = double.parse(model.UnitPrice) * 1;
+                                  String currentDate = DateFormat.yMd()
+                                      .add_jm()
+                                      .format(now); // 28/03/2020
+
+                                  CartProductModel productCartModel =
+                                      CartProductModel(
+                                          custID,
+                                          model.ProductName,
+                                          1,
+                                          model.UnitPrice,
+                                          model.Specification,
+                                          model.Unit,
+                                          model.UnitPrice,
+                                          model.image,
+                                          currentDate);
+                                  await OfflineDbHelper.getInstance()
+                                      .insertCartProduct(productCartModel);
+                                  fToast.showToast(
+                                    child: showCustomToast(
+                                        Title: "Item is Added to Cart !"),
+                                    gravity: ToastGravity.BOTTOM,
+                                    toastDuration: Duration(seconds: 2),
+                                  );
+                                  setState(() {});
+                                }
+                              }, "Add to Cart",
                                   radius: 20, height: 35, width: 150)
                             ],
                           ),
@@ -168,6 +261,7 @@ class _DashBoardState extends State<DashBoard> {
         await OfflineDbHelper.getInstance().getAllGeneralProduct();
     temparr_CustomerList =
         await OfflineDbHelper.getInstance().getAllGeneralProduct();
+
     setState(() {});
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
+import 'package:minicrm/Database/table_models/product/cart_product_table.dart';
 import 'package:minicrm/Database/table_models/product/genral_product_table.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -11,11 +12,12 @@ class OfflineDbHelper {
 
   static const TABLE_CUSTOMER = "customer";
   static const TABLE_GENERAL_PRODUCT = "general_product";
+  static const TABLE_CART_PRODUCT = "cart_product";
 
   static createInstance() async {
     _offlineDbHelper = OfflineDbHelper();
     database = await openDatabase(join(await getDatabasesPath(), 'miniCRM.db'),
-        onCreate: (db, version) => _createDb(db), version: 4);
+        onCreate: (db, version) => _createDb(db), version: 5);
   }
 
   static void _createDb(Database db) {
@@ -25,6 +27,10 @@ class OfflineDbHelper {
 
     db.execute(
       'CREATE TABLE $TABLE_GENERAL_PRODUCT(id INTEGER PRIMARY KEY AUTOINCREMENT, ProductName TEXT, UnitPrice TEXT , Specification TEXT , Unit TEXT , image BLOB, CreatedDate TEXT)',
+    );
+
+    db.execute(
+      'CREATE TABLE $TABLE_CART_PRODUCT(id INTEGER PRIMARY KEY AUTOINCREMENT, CustID INTEGER, ProductName TEXT, Qty INTEGER , UnitPrice TEXT , Specification TEXT , Unit TEXT , NetAmount TEXT , image BLOB, CreatedDate TEXT)',
     );
 
     //TABLE_GENERAL_PRODUCT
@@ -251,5 +257,70 @@ class OfflineDbHelper {
     final db = await database;
 
     await db.delete(TABLE_GENERAL_PRODUCT);
+  }
+
+  /// CART Product CRUD
+  Future<int> insertCartProduct(CartProductModel model) async {
+    final db = await database;
+
+    return await db.insert(
+      TABLE_CART_PRODUCT,
+      model.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<CartProductModel>> getAllCartProduct() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(TABLE_CART_PRODUCT);
+
+    return List.generate(maps.length, (i) {
+      return CartProductModel(
+        maps[i]['CustID'],
+        maps[i]['ProductName'],
+        maps[i]['Qty'],
+        maps[i]['UnitPrice'],
+        maps[i]['Specification'],
+        maps[i]['Unit'],
+        maps[i]['NetAmount'],
+        maps[i]['image'],
+        maps[i]['CreatedDate'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<void> updateCartProduct(CartProductModel model) async {
+    final db = await database;
+
+    await db.update(
+      TABLE_CART_PRODUCT,
+      model.toJson(),
+      where: 'id = ?',
+      whereArgs: [model.id],
+    );
+  }
+
+  Future<void> deleteCartProduct(int id) async {
+    final db = await database;
+
+    await db.delete(
+      TABLE_CART_PRODUCT,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<ProductModel>> searchCartProduct(String keyWord) async {
+    final db = await database;
+    List<Map<String, dynamic>> allRows = await db.query(TABLE_CART_PRODUCT,
+        where: 'ProductName LIKE ?', whereArgs: ['%$keyWord%']);
+  }
+
+  Future<void> deleteAllCartProduct() async {
+    final db = await database;
+
+    await db.delete(TABLE_CART_PRODUCT);
   }
 }

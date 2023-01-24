@@ -56,6 +56,7 @@ const colorRED = const Color(0xFFE02C2C);
 const colorTileBG = const Color(0xFFD6E7E5);
 const colorCardBG = const Color(0xFFABC48D); //
 const colorVeryLightCardBG = const Color(0xFFE9EDFA); //
+const Getirblue = const Color(0xff4e4590);
 
 //D9E6E5
 

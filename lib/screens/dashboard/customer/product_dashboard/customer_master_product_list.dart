@@ -121,6 +121,25 @@ class _CustomerDashBoardState extends State<CustomerDashBoard> {
                       size: 35,
                     ),
             ),
+            /* IconButton(
+              enableFeedback: false,
+              onPressed: () {
+                setState(() {
+                  pageIndex = 3;
+                });
+              },
+              icon: pageIndex == 3
+                  ? const Icon(
+                Icons.view_list_rounded,
+                color: Colors.white,
+                size: 35,
+              )
+                  : const Icon(
+                Icons.view_list,
+                color: Colors.white,
+                size: 35,
+              ),
+            ),*/
           ],
         ),
       ),
