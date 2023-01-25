@@ -443,20 +443,22 @@ class _CustomerAddEditState extends State<CustomerAddEdit> {
 
   BuildCustomerSource() {
     arr_ALL_Name_ID_For_Source.clear();
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 7; i++) {
       ALL_Name_ID all_name_id = ALL_Name_ID();
 
       if (i == 0) {
-        all_name_id.Name1 = "Walk in";
+        all_name_id.Name1 = "Mobile App";
       } else if (i == 1) {
-        all_name_id.Name1 = "Reference";
+        all_name_id.Name1 = "Walk in";
       } else if (i == 2) {
-        all_name_id.Name1 = "By Mail";
+        all_name_id.Name1 = "Reference";
       } else if (i == 3) {
-        all_name_id.Name1 = "InProcess";
+        all_name_id.Name1 = "By Mail";
       } else if (i == 4) {
-        all_name_id.Name1 = "TelePhonic";
+        all_name_id.Name1 = "InProcess";
       } else if (i == 5) {
+        all_name_id.Name1 = "TelePhonic";
+      } else if (i == 6) {
         all_name_id.Name1 = "WebSite";
       }
       arr_ALL_Name_ID_For_Source.add(all_name_id);

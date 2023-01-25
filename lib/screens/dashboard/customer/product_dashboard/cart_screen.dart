@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/Database/table_models/product/cart_product_table.dart';
+import 'package:minicrm/Database/table_models/product/placed_order.dart';
 import 'package:minicrm/resource/color_resource.dart';
 import 'package:minicrm/utils/full_screen_image.dart';
 import 'package:minicrm/utils/general_utils.dart';
 import 'package:minicrm/utils/item_counter_widget.dart';
+import 'package:minicrm/utils/shared_pref_helper.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key key}) : super(key: key);
@@ -29,9 +32,13 @@ class _CartScreenState extends State<CartScreen> {
 
   FToast fToast;
 
+  int custID = 0;
+
   @override
   void initState() {
     super.initState();
+    custID =
+        SharedPrefHelper.instance.getInt(SharedPrefHelper.IS_LOGGED_IN_USER_ID);
     fToast = FToast();
     fToast.init(context);
     getCustomerListFromDB();
@@ -339,7 +346,8 @@ class _CartScreenState extends State<CartScreen> {
 
   void getDetails() async {
     arr_CustomerList.clear();
-    arr_CustomerList = await OfflineDbHelper.getInstance().getAllCartProduct();
+    arr_CustomerList =
+        await OfflineDbHelper.getInstance().getAllCartProduct(custID);
 
     for (int i = 0; i < arr_CustomerList.length; i++) {
       TotalAmount += (double.parse(arr_CustomerList[i].UnitPrice) *
@@ -434,8 +442,32 @@ class _CartScreenState extends State<CartScreen> {
       child: getCommonButton(() {
         showCommonDialogWithSingleOption(context,
             "Your Inquiry Has been submitted , We Will Contact you soon !",
-            positiveButtonTitle: "OK");
-      }, "PlaceOrder"),
+            onTapOfPositiveButton: () async {
+          final now = new DateTime.now();
+          String currentDate =
+              DateFormat.yMd().add_jm().format(now); // 28/03/2020
+
+          for (int i = 0; i < arr_CustomerList.length; i++) {
+            PlacedProductModel placedProductModel = PlacedProductModel(
+                custID,
+                arr_CustomerList[i].ProductName,
+                arr_CustomerList[i].Qty,
+                arr_CustomerList[i].UnitPrice,
+                arr_CustomerList[i].Specification,
+                arr_CustomerList[i].Unit,
+                arr_CustomerList[i].NetAmount,
+                arr_CustomerList[i].image,
+                currentDate);
+
+            await OfflineDbHelper.getInstance()
+                .insertPlacedProduct(placedProductModel);
+          }
+
+          await OfflineDbHelper.getInstance().deleteAllCartProduct();
+          getDetails();
+          Navigator.pop(context);
+        }, positiveButtonTitle: "OK");
+      }, "Placed Order"),
     );
   }
 

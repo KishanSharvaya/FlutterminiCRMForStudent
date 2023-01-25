@@ -17,7 +17,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscuredText = true;
 
   TextEditingController edt_customerName = TextEditingController();
-  TextEditingController edt_Source = TextEditingController();
   TextEditingController edt_mobileNo1 = TextEditingController();
   TextEditingController edt_mobileNo2 = TextEditingController();
   TextEditingController edt_email = TextEditingController();
@@ -34,9 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
-    BuildCustomerSource();
     edt_customerName.text = "";
-    edt_Source.text = "";
     edt_mobileNo1.text = "";
     edt_mobileNo2.text = "";
     edt_email.text = "";
@@ -70,10 +67,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 20,
               ),
               CustomerName(),
-              SizedBox(
-                height: 20,
-              ),
-              Source(),
               SizedBox(
                 height: 20,
               ),
@@ -134,31 +127,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           border: OutlineInputBorder(),
           labelText: 'Customer Name',
           hintText: 'Enter Your Name',
-        ),
-      ),
-    );
-  }
-
-  Widget Source() {
-    return InkWell(
-      onTap: () {
-        showcustomListdialogWithOnlyName(
-            values: arr_ALL_Name_ID_For_Source,
-            context1: context,
-            controller: edt_Source,
-            lable: "Customer Source ");
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: 20, right: 20),
-        child: TextField(
-          enabled: false,
-          controller: edt_Source,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Customer Source',
-            hintText: 'Select Customer Source',
-          ),
         ),
       ),
     );
@@ -371,35 +339,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  BuildCustomerSource() {
-    arr_ALL_Name_ID_For_Source.clear();
-    for (var i = 0; i < 6; i++) {
-      ALL_Name_ID all_name_id = ALL_Name_ID();
-
-      if (i == 0) {
-        all_name_id.Name1 = "Walk in";
-      } else if (i == 1) {
-        all_name_id.Name1 = "Reference";
-      } else if (i == 2) {
-        all_name_id.Name1 = "By Mail";
-      } else if (i == 3) {
-        all_name_id.Name1 = "InProcess";
-      } else if (i == 4) {
-        all_name_id.Name1 = "TelePhonic";
-      } else if (i == 5) {
-        all_name_id.Name1 = "WebSite";
-      }
-      arr_ALL_Name_ID_For_Source.add(all_name_id);
-    }
-  }
-
   AddUpdateCustomer() async {
     final now = new DateTime.now();
     String currentDate = DateFormat.yMd().add_jm().format(now); // 28/03/2020
 
     CustomerModel customerModel = CustomerModel(
       edt_customerName.text,
-      edt_Source.text,
+      "Mobile App",
       edt_mobileNo1.text,
       edt_mobileNo2.text,
       edt_email.text,

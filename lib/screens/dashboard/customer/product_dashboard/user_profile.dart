@@ -20,8 +20,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   bool _obscuredText = true;
 
   TextEditingController edt_customerName = TextEditingController();
-  TextEditingController edt_Type = TextEditingController();
-  TextEditingController edt_Source = TextEditingController();
   TextEditingController edt_mobileNo1 = TextEditingController();
   TextEditingController edt_mobileNo2 = TextEditingController();
   TextEditingController edt_email = TextEditingController();
@@ -275,34 +273,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return InkWell(
       onTap: () {
         if (edt_customerName.text != "") {
-          if (edt_Type.text != "") {
-            if (edt_mobileNo1.text != "") {
-              if (edt_email.text != "") {
-                if (edt_password.text != "") {
-                  if (edt_Type.text != "") {
-                    AddUpdateCustomer();
-                  } else {
-                    showCommonDialogWithSingleOption(
-                        context, "Customer Type is Required !",
-                        positiveButtonTitle: "OK");
-                  }
-                } else {
-                  showCommonDialogWithSingleOption(
-                      context, "Password is Required !",
-                      positiveButtonTitle: "OK");
-                }
+          if (edt_mobileNo1.text != "") {
+            if (edt_email.text != "") {
+              if (edt_password.text != "") {
+                AddUpdateCustomer();
               } else {
-                showCommonDialogWithSingleOption(context, "Email is Required !",
+                showCommonDialogWithSingleOption(
+                    context, "Password is Required !",
                     positiveButtonTitle: "OK");
               }
             } else {
-              showCommonDialogWithSingleOption(
-                  context, "MobileNo1 is Required !",
+              showCommonDialogWithSingleOption(context, "Email is Required !",
                   positiveButtonTitle: "OK");
             }
           } else {
-            showCommonDialogWithSingleOption(
-                context, "Customer Type is Required !",
+            showCommonDialogWithSingleOption(context, "MobileNo1 is Required !",
                 positiveButtonTitle: "OK");
           }
         } else {
@@ -343,7 +328,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
     CustomerModel UpdatecustomerModel = CustomerModel(
         edt_customerName.text,
-        edt_Source.text,
+        "Mobile App",
         edt_mobileNo1.text,
         edt_mobileNo2.text,
         edt_email.text,
@@ -353,7 +338,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         edt_state.text,
         edt_country.text,
         edt_pincode.text,
-        edt_Type.text,
+        "customer",
         currentDate,
         id: custID);
 
@@ -371,7 +356,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         await OfflineDbHelper.getInstance().getOnlyCustomerDetails(custID);
 
     edt_customerName.text = arr_customerModel[0].CustomerName;
-    edt_Source.text = arr_customerModel[0].Source;
     edt_mobileNo1.text = arr_customerModel[0].MobileNo1;
     edt_mobileNo2.text = arr_customerModel[0].MobileNo2;
     edt_email.text = arr_customerModel[0].Email;
@@ -381,7 +365,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     edt_state.text = arr_customerModel[0].State;
     edt_country.text = arr_customerModel[0].Country;
     edt_pincode.text = arr_customerModel[0].Pincode;
-    edt_Type.text = arr_customerModel[0].CustomerType;
 
     setState(() {});
   }

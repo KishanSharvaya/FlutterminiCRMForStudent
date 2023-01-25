@@ -155,7 +155,7 @@ class _DashBoardState extends State<DashBoard> {
                               getCommonButton(() async {
                                 List<CartProductModel> arr_CartList =
                                     await OfflineDbHelper.getInstance()
-                                        .getAllCartProduct();
+                                        .getAllCartProduct(custID);
 
                                 bool isExistinCart = false;
                                 if (arr_CartList != null) {

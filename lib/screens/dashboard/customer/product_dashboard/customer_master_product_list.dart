@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minicrm/resource/color_resource.dart';
 import 'package:minicrm/screens/dashboard/customer/product_dashboard/cart_screen.dart';
 import 'package:minicrm/screens/dashboard/customer/product_dashboard/dashboard.dart';
+import 'package:minicrm/screens/dashboard/customer/product_dashboard/my_order.dart';
 import 'package:minicrm/screens/dashboard/customer/product_dashboard/user_profile.dart';
 import 'package:minicrm/screens/login_screen/login_screen.dart';
 import 'package:minicrm/utils/general_utils.dart';
@@ -19,6 +20,7 @@ class _CustomerDashBoardState extends State<CustomerDashBoard> {
   List<Widget> pages = [
     CartScreen(),
     DashBoard(),
+    MyOrder(),
     UserProfileScreen(),
   ];
 
@@ -61,86 +63,102 @@ class _CustomerDashBoardState extends State<CustomerDashBoard> {
             topRight: Radius.circular(20),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              enableFeedback: false,
-              onPressed: () {
-                setState(() {
-                  pageIndex = 0;
-                });
-              },
-              icon: pageIndex == 0
-                  ? const Icon(
-                      Icons.shopping_cart,
-                      color: Colors.white,
-                      size: 35,
-                    )
-                  : const Icon(
-                      Icons.shopping_cart_outlined,
-                      color: Colors.white,
-                      size: 35,
-                    ),
-            ),
-            IconButton(
-              enableFeedback: false,
-              onPressed: () {
-                setState(() {
-                  pageIndex = 1;
-                });
-              },
-              icon: pageIndex == 1
-                  ? const Icon(
-                      Icons.home,
-                      color: Colors.white,
-                      size: 35,
-                    )
-                  : const Icon(
-                      Icons.home_outlined,
-                      color: Colors.white,
-                      size: 35,
-                    ),
-            ),
-            IconButton(
-              enableFeedback: false,
-              onPressed: () {
-                setState(() {
-                  pageIndex = 2;
-                });
-              },
-              icon: pageIndex == 2
-                  ? const Icon(
-                      Icons.person,
-                      color: Colors.white,
-                      size: 35,
-                    )
-                  : const Icon(
-                      Icons.person_2_outlined,
-                      color: Colors.white,
-                      size: 35,
-                    ),
-            ),
-            /* IconButton(
-              enableFeedback: false,
-              onPressed: () {
-                setState(() {
-                  pageIndex = 3;
-                });
-              },
-              icon: pageIndex == 3
-                  ? const Icon(
-                Icons.view_list_rounded,
-                color: Colors.white,
-                size: 35,
-              )
-                  : const Icon(
-                Icons.view_list,
-                color: Colors.white,
-                size: 35,
+        child: Container(
+          margin: EdgeInsets.only(top: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    pageIndex = 0;
+                  });
+                },
+                child: Container(
+                  child: Column(
+                    children: [
+                      Icon(
+                          pageIndex == 0
+                              ? Icons.shopping_cart
+                              : Icons.shopping_cart_outlined,
+                          color: colorWhite,
+                          size: 24),
+                      Text(
+                        "Cart",
+                        style: TextStyle(fontSize: 10, color: colorWhite),
+                      )
+                    ],
+                  ),
+                ),
               ),
-            ),*/
-          ],
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    pageIndex = 1;
+                  });
+                },
+                child: Container(
+                  child: Column(
+                    children: [
+                      Icon(pageIndex == 1 ? Icons.home : Icons.home_outlined,
+                          size: 24, color: colorWhite),
+                      Text(
+                        "Home",
+                        style: TextStyle(fontSize: 10, color: colorWhite),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    pageIndex = 2;
+                  });
+                },
+                child: Container(
+                  child: Column(
+                    children: [
+                      Icon(
+                          pageIndex == 2
+                              ? Icons.featured_play_list
+                              : Icons.featured_play_list_outlined,
+                          size: 24,
+                          color: colorWhite),
+                      Text(
+                        "Order",
+                        style: TextStyle(fontSize: 10, color: colorWhite),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    pageIndex = 3;
+                  });
+                },
+                child: Container(
+                  child: Column(
+                    children: [
+                      Icon(
+                          pageIndex == 3
+                              ? Icons.person
+                              : Icons.person_2_outlined,
+                          size: 24,
+                          color: colorWhite),
+                      Text(
+                        "Profile",
+                        style: TextStyle(fontSize: 10, color: colorWhite),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

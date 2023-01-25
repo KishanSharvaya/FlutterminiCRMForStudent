@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
+import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_list.dart';
 import 'package:minicrm/screens/dashboard/employee/product_master/master_product_list.dart';
 import 'package:minicrm/screens/login_screen/login_screen.dart';
 import 'package:minicrm/utils/general_utils.dart';
@@ -65,9 +66,7 @@ class _EmployeeDashBoardState extends State<EmployeeDashBoard> {
                 Flexible(
                   child: InkWell(
                       onTap: () {
-                        showCommonDialogWithSingleOption(context, "Coming Soon",
-                            positiveButtonTitle: "OK");
-                        // navigateTo(context, CustomerListScreen.routeName);
+                        navigateTo(context, InquiryListScreen.routeName);
                       },
                       child: Column(
                         children: [
