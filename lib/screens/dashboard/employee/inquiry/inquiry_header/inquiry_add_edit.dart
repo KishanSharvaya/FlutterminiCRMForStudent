@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
 import 'package:minicrm/Database/table_models/inquiry/inquiry_header.dart';
 import 'package:minicrm/resource/color_resource.dart';
@@ -7,6 +8,7 @@ import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
 import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/general_customer_search.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_list.dart';
+import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_list.dart';
 import 'package:minicrm/utils/general_model/all_name_id.dart';
 import 'package:minicrm/utils/general_utils.dart';
 
@@ -307,8 +309,26 @@ class _InquiryAddEditState extends State<InquiryAddEdit> {
     return InkWell(
       onTap: () {
         if (edt_customerName.text != "") {
-          showCommonDialogWithSingleOption(context, "Product Details !",
-              positiveButtonTitle: "OK");
+          /* showCommonDialogWithSingleOption(context, "Product Details !",
+              positiveButtonTitle: "OK");*/
+
+          // navigateTo(context, InquiryProductListScreen.routeName)
+
+          int CustIDD = int.parse(edt_customerID.text.toString() == ""
+              ? 0
+              : edt_customerID.text.toString());
+          navigateTo(context, InquiryProductListScreen.routeName,
+                  arguments:
+                      AddUpdateInquiryProductListArguments(CustIDD, InqID: 0))
+              .then((value) {
+            if (value != null) {
+              CustomerModel customerModel = value;
+              edt_customerName.text = customerModel.CustomerName;
+              edt_customerID.text = customerModel.id.toString();
+            }
+
+            // getDetails();
+          });
         } else {
           showCommonDialogWithSingleOption(
               context, "Customer Name is Required !",
@@ -484,7 +504,8 @@ class _InquiryAddEditState extends State<InquiryAddEdit> {
     String currentDate = DateFormat.yMd().add_jm().format(now); // 28/03/2020
 
     if (_isForUpdate == true) {
-      //await OfflineDbHelper.getInstance().updateCustomer(UpdatecustomerModel);
+      await OfflineDbHelper.getInstance()
+          .insertInquiryHeader(UpdatecustomerModel);
     } else {
       // await OfflineDbHelper.getInstance().insertCustomer(customerModel);
     }

@@ -7,6 +7,8 @@ import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/general_customer_search.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_add_edit.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_list.dart';
+import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_add_edit.dart';
+import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_list.dart';
 import 'package:minicrm/screens/dashboard/employee/product_master/master_product_add_edit.dart';
 import 'package:minicrm/screens/dashboard/employee/product_master/master_product_list.dart';
 import 'package:minicrm/screens/login_screen/login_screen.dart';
@@ -62,6 +64,12 @@ class MyApp extends StatefulWidget {
       case GeneralCustomerSearchScreen.routeName:
         return getMaterialPageRoute(
             GeneralCustomerSearchScreen(settings.arguments));
+      case InquiryProductListScreen.routeName:
+        return getMaterialPageRoute(
+            InquiryProductListScreen(settings.arguments));
+
+      case InquiryProductAddEdit.routeName:
+        return getMaterialPageRoute(InquiryProductAddEdit(settings.arguments));
       //
       default:
         return null;

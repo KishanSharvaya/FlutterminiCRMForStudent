@@ -514,12 +514,37 @@ class OfflineDbHelper {
     );
   }
 
-  Future<List<InquiryProductModel>> getAllInquiryProduct(int custId) async {
+  Future<List<InquiryProductModel>> getAllCustomerInquiryProduct(
+      int custId) async {
     final db = await database;
 
     //final List<Map<String, dynamic>> maps = await db.query(TABLE_CART_PRODUCT);
     List<Map<String, dynamic>> maps = await db.query(TABLE_INQUIRY_PRODUCT,
         where: 'CustID LIKE ?', whereArgs: ['%$custId%']);
+
+    return List.generate(maps.length, (i) {
+      return InquiryProductModel(
+        maps[i]['CustID'],
+        maps[i]['Inq_id'],
+        maps[i]['ProductName'],
+        maps[i]['Qty'],
+        maps[i]['UnitPrice'],
+        maps[i]['Specification'],
+        maps[i]['Unit'],
+        maps[i]['NetAmount'],
+        maps[i]['image'],
+        maps[i]['CreatedDate'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<List<InquiryProductModel>> getAllInquiryProduct(int inqID) async {
+    final db = await database;
+
+    //final List<Map<String, dynamic>> maps = await db.query(TABLE_CART_PRODUCT);
+    List<Map<String, dynamic>> maps = await db.query(TABLE_INQUIRY_PRODUCT,
+        where: 'Inq_id LIKE ?', whereArgs: ['%$inqID%']);
 
     return List.generate(maps.length, (i) {
       return InquiryProductModel(
