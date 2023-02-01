@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
+import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
+import 'package:minicrm/Database/table_models/inquiry/inquiry_header.dart';
+import 'package:minicrm/Database/table_models/inquiry/inquiry_product.dart';
 import 'package:minicrm/Database/table_models/product/cart_product_table.dart';
 import 'package:minicrm/Database/table_models/product/placed_order.dart';
 import 'package:minicrm/resource/color_resource.dart';
@@ -464,6 +467,41 @@ class _CartScreenState extends State<CartScreen> {
           }
 
           await OfflineDbHelper.getInstance().deleteAllCartProduct();
+
+          List<CustomerModel> arr_customerModel =
+              await OfflineDbHelper.getInstance()
+                  .getOnlyCustomerDetails(custID);
+
+          int returnNo = await OfflineDbHelper.getInstance()
+              .insertInquiryHeader(InquiryHeaderModel(
+                  custID,
+                  "",
+                  arr_customerModel[0].CustomerName,
+                  "High",
+                  "Open",
+                  "Mobile App",
+                  "Inquiry For Product",
+                  "",
+                  currentDate,
+                  arr_customerModel[0].CustomerName,
+                  arr_customerModel[0].CustomerType));
+
+          for (int i = 0; i < arr_CustomerList.length; i++) {
+            InquiryProductModel tempInquiryProductModel = InquiryProductModel(
+                custID,
+                returnNo,
+                arr_CustomerList[i].ProductName,
+                arr_CustomerList[i].Qty,
+                arr_CustomerList[i].UnitPrice,
+                arr_CustomerList[i].Specification,
+                arr_CustomerList[i].Unit,
+                arr_CustomerList[i].NetAmount,
+                currentDate);
+
+            await OfflineDbHelper.getInstance()
+                .insertInquiryProduct(tempInquiryProductModel);
+          }
+
           getDetails();
           Navigator.pop(context);
         }, positiveButtonTitle: "OK");

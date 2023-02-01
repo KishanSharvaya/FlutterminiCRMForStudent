@@ -1,11 +1,9 @@
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
-import 'package:minicrm/Database/table_models/inquiry/inquiry_product.dart';
+import 'package:minicrm/Database/table_models/inquiry/temp_inquiry_product.dart';
 import 'package:minicrm/resource/color_resource.dart';
-import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_add_edit.dart';
-import 'package:minicrm/utils/full_screen_image.dart';
 import 'package:minicrm/utils/general_utils.dart';
 
 class AddUpdateInquiryProductListArguments {
@@ -29,8 +27,8 @@ class InquiryProductListScreen extends StatefulWidget {
 }
 
 class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
-  List<InquiryProductModel> arr_CustomerList = [];
-  List<InquiryProductModel> temparr_CustomerList = [];
+  List<TempInquiryProductModel> arr_CustomerList = [];
+  List<TempInquiryProductModel> temparr_CustomerList = [];
 
   int _cutID = 0;
   int _InqID = 0;
@@ -46,26 +44,17 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
   @override
   void initState() {
     super.initState();
-    _cutID = widget.arguments.custID;
-    _InqID = widget.arguments.InqID == null ? 0 : widget.arguments.InqID;
+    // _cutID = widget.arguments.custID;
+    // _InqID = widget.arguments.InqID == null ? 0 : widget.arguments.InqID;
     getCustomerListFromDB();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: _onBackPressed,
       child: Scaffold(
         appBar: AppBar(
           title: Text("Inquiry Product List"),
-          actions: [
-            InkWell(
-                onTap: () {
-                  navigateTo(context, EmployeeDashBoard.routeName,
-                      clearAllStack: true);
-                },
-                child: Icon(Icons.home)),
-          ],
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -89,7 +78,12 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             // Add your onPressed code here!
-            navigateTo(context, InquiryProductAddEdit.routeName);
+            // navigateTo(context, InquiryProductAddEdit.routeName);
+            await navigateTo(
+              context,
+              InquiryProductAddEdit.routeName,
+            );
+            getDetails();
           },
           child: const Icon(Icons.add),
           backgroundColor: colorPrimary,
@@ -106,17 +100,10 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
     arr_CustomerList.clear();
     temparr_CustomerList.clear();
 
-    if (_InqID != 0 || _InqID != null) {
-      arr_CustomerList =
-          await OfflineDbHelper.getInstance().getAllInquiryProduct(_InqID);
-      temparr_CustomerList =
-          await OfflineDbHelper.getInstance().getAllInquiryProduct(_InqID);
-    } else {
-      arr_CustomerList = await OfflineDbHelper.getInstance()
-          .getAllCustomerInquiryProduct(_cutID);
-      temparr_CustomerList = await OfflineDbHelper.getInstance()
-          .getAllCustomerInquiryProduct(_cutID);
-    }
+    arr_CustomerList =
+        await OfflineDbHelper.getInstance().getAllTempInquiryProduct();
+    temparr_CustomerList =
+        await OfflineDbHelper.getInstance().getAllTempInquiryProduct();
 
     //
 
@@ -124,7 +111,7 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
   }
 
   Widget Items(int index) {
-    InquiryProductModel model = arr_CustomerList[index];
+    TempInquiryProductModel model = arr_CustomerList[index];
 
     return Container(
         padding: EdgeInsets.all(15),
@@ -187,20 +174,6 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
           ),
 
           children: <Widget>[
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: ImageFullScreenWrapperWidget(
-                  child: Image.memory(
-                    model.image,
-                    height: 100,
-                    width: 100,
-                  ),
-                ),
-              ),
-            ),
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -288,6 +261,97 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
                                                           model.UnitPrice == ""
                                                               ? "N/A"
                                                               : model.UnitPrice
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                            ]),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: sizeboxsize,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("Quantity",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.Qty.toString() ==
+                                                                  ""
+                                                              ? "N/A"
+                                                              : model.Qty
+                                                                      .toString()
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  title_color),
+                                                              fontSize:
+                                                                  _fontSize_Title,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                    ],
+                                                  )),
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text("Net Amount",
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                              color: Color(
+                                                                  label_color),
+                                                              fontSize:
+                                                                  _fontSize_Label,
+                                                              letterSpacing:
+                                                                  .3)),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                          model.NetAmount
+                                                                      .toString() ==
+                                                                  ""
+                                                              ? "N/A"
+                                                              : model.NetAmount
+                                                                      .toString()
                                                                   .toString(),
                                                           style: TextStyle(
                                                               color: Color(
@@ -419,7 +483,12 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
                         onTap: () async {
                           // _onTapOfDeleteInquiry(model.customerID);
                           await OfflineDbHelper.getInstance()
-                              .deleteGeneralProduct(model.id);
+                              .deleteTempInquiryProduct(model.id);
+
+                          await OfflineDbHelper.getInstance()
+                              .deleteInquiryProductwithCustomerID(
+                                  int.parse(model.CustID.toString()));
+
                           getDetails();
                         },
                         child: Row(
@@ -483,10 +552,10 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
   }
 
   void SearchResult(String enteredKeyword) {
-    List<InquiryProductModel> dummySearchList = [];
+    List<TempInquiryProductModel> dummySearchList = [];
     dummySearchList.addAll(arr_CustomerList);
     if (enteredKeyword.isNotEmpty) {
-      List<InquiryProductModel> dummyListData = [];
+      List<TempInquiryProductModel> dummyListData = [];
       dummySearchList.forEach((item) {
         if (item.ProductName.toLowerCase()
             .contains(enteredKeyword.toLowerCase())) {
@@ -504,9 +573,5 @@ class _InquiryProductListScreenState extends State<InquiryProductListScreen> {
         arr_CustomerList.addAll(temparr_CustomerList);
       });
     }
-  }
-
-  Future<bool> _onBackPressed() {
-    navigateTo(context, EmployeeDashBoard.routeName, clearAllStack: true);
   }
 }

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/Database/table_models/product/genral_product_table.dart';
-import 'package:minicrm/resource/color_resource.dart';
-import 'package:minicrm/screens/dashboard/employee/product_master/master_product_add_edit.dart';
-import 'package:minicrm/utils/general_utils.dart';
 
 class AddUpdateGeneralProductSearchArguments {
   // SearchDetails editModel;
@@ -15,8 +12,9 @@ class AddUpdateGeneralProductSearchArguments {
 class GeneralProductSearchScreen extends StatefulWidget {
   static const routeName = '/GeneralProductSearchScreen';
 
-  const GeneralProductSearchScreen({Key key}) : super(key: key);
+  final AddUpdateGeneralProductSearchArguments arguments;
 
+  GeneralProductSearchScreen(this.arguments);
   @override
   State<GeneralProductSearchScreen> createState() =>
       _GeneralProductSearchScreenState();
@@ -44,46 +42,28 @@ class _GeneralProductSearchScreenState
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Product Search"),
-          actions: [
-            InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Icon(Icons.home)),
-          ],
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Text("df"),
-            SearchTextField(),
-            arr_CustomerList.length != 0
-                ? Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return Items(index);
-                        //return Text(arr_CustomerList[index].CustomerName);
-                      },
-                      itemCount: arr_CustomerList.length,
-                    ),
-                  )
-                : Center(child: Text("No Product Found")),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            // Add your onPressed code here!
-            navigateTo(context, GeneralProductAddEdit.routeName);
-          },
-          child: const Icon(Icons.add),
-          backgroundColor: colorPrimary,
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Product Search"),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Text("df"),
+          SearchTextField(),
+          arr_CustomerList.length != 0
+              ? Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      return Items(index);
+                      //return Text(arr_CustomerList[index].CustomerName);
+                    },
+                    itemCount: arr_CustomerList.length,
+                  ),
+                )
+              : Center(child: Text("No Product Found")),
+        ],
       ),
     );
   }
@@ -170,10 +150,5 @@ class _GeneralProductSearchScreenState
         arr_CustomerList.addAll(temparr_CustomerList);
       });
     }
-  }
-
-  Future<bool> _onBackPressed() {
-    Navigator.pop(context);
-    //navigateTo(context, EmployeeDashBoard.routeName, clearAllStack: true);
   }
 }

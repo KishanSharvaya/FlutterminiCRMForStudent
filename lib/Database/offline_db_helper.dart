@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
 import 'package:minicrm/Database/table_models/inquiry/inquiry_header.dart';
 import 'package:minicrm/Database/table_models/inquiry/inquiry_product.dart';
+import 'package:minicrm/Database/table_models/inquiry/temp_inquiry_product.dart';
 import 'package:minicrm/Database/table_models/product/cart_product_table.dart';
 import 'package:minicrm/Database/table_models/product/genral_product_table.dart';
 import 'package:minicrm/Database/table_models/product/placed_order.dart';
@@ -19,11 +20,12 @@ class OfflineDbHelper {
   static const TABLE_PLACED_PRODUCT = "placed_product";
   static const TABLE_INQUIRY_HEADER = "inquiry_header";
   static const TABLE_INQUIRY_PRODUCT = "inquiry_product";
+  static const TABLE_TEMP_INQUIRY_PRODUCT = "temp_inquiry_product";
 
   static createInstance() async {
     _offlineDbHelper = OfflineDbHelper();
     database = await openDatabase(join(await getDatabasesPath(), 'miniCRM.db'),
-        onCreate: (db, version) => _createDb(db), version: 6);
+        onCreate: (db, version) => _createDb(db), version: 7);
   }
 
   static void _createDb(Database db) {
@@ -47,7 +49,10 @@ class OfflineDbHelper {
       'CREATE TABLE $TABLE_INQUIRY_HEADER(id INTEGER PRIMARY KEY AUTOINCREMENT, CustID INTEGER, LeadNo TEXT, CustomerName INTEGER , LeadPriority TEXT , LeadStatus TEXT , LeadSource TEXT , Description TEXT , CloserReason TEXT, CreatedDate TEXT , CreatedBy TEXT , Customer_type TEXT)',
     );
     db.execute(
-      'CREATE TABLE $TABLE_INQUIRY_PRODUCT(id INTEGER PRIMARY KEY AUTOINCREMENT, CustID INTEGER, Inq_id  INTEGER, ProductName TEXT, Qty INTEGER , UnitPrice TEXT , Specification TEXT , Unit TEXT , NetAmount TEXT , image BLOB, CreatedDate TEXT)',
+      'CREATE TABLE $TABLE_INQUIRY_PRODUCT(id INTEGER PRIMARY KEY AUTOINCREMENT, CustID INTEGER, Inq_id  INTEGER, ProductName TEXT, Qty INTEGER , UnitPrice TEXT , Specification TEXT , Unit TEXT , NetAmount TEXT , CreatedDate TEXT)',
+    );
+    db.execute(
+      'CREATE TABLE $TABLE_TEMP_INQUIRY_PRODUCT(id INTEGER PRIMARY KEY AUTOINCREMENT, CustID INTEGER, Inq_id  INTEGER, ProductName TEXT, Qty INTEGER , UnitPrice TEXT , Specification TEXT , Unit TEXT , NetAmount TEXT , CreatedDate TEXT)',
     );
   }
 
@@ -381,11 +386,12 @@ class OfflineDbHelper {
   Future<int> insertInquiryHeader(InquiryHeaderModel model) async {
     final db = await database;
 
-    return await db.insert(
+    final pkid = await db.insert(
       TABLE_INQUIRY_HEADER,
       model.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    return pkid;
   }
 
   Future<List<InquiryHeaderModel>> getAllInquiryHeader() async {
@@ -428,15 +434,16 @@ class OfflineDbHelper {
     });
   }
 
-  Future<void> updateInquiryHeader(InquiryHeaderModel model) async {
+  Future<int> updateInquiryHeader(InquiryHeaderModel model) async {
     final db = await database;
 
-    await db.update(
+    final pkid = await db.update(
       TABLE_INQUIRY_HEADER,
       model.toJson(),
       where: 'id = ?',
       whereArgs: [model.id],
     );
+    return pkid;
   }
 
   Future<void> deleteInquiryHeader(int id) async {
@@ -532,7 +539,6 @@ class OfflineDbHelper {
         maps[i]['Specification'],
         maps[i]['Unit'],
         maps[i]['NetAmount'],
-        maps[i]['image'],
         maps[i]['CreatedDate'],
         id: maps[i]['id'],
       );
@@ -556,7 +562,6 @@ class OfflineDbHelper {
         maps[i]['Specification'],
         maps[i]['Unit'],
         maps[i]['NetAmount'],
-        maps[i]['image'],
         maps[i]['CreatedDate'],
         id: maps[i]['id'],
       );
@@ -580,6 +585,16 @@ class OfflineDbHelper {
     await db.delete(
       TABLE_INQUIRY_PRODUCT,
       where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> deleteInquiryProductwithCustomerID(int id) async {
+    final db = await database;
+
+    await db.delete(
+      TABLE_INQUIRY_PRODUCT,
+      where: 'CustID = ?',
       whereArgs: [id],
     );
   }
@@ -609,7 +624,6 @@ class OfflineDbHelper {
         maps[i]['Specification'],
         maps[i]['Unit'],
         maps[i]['NetAmount'],
-        maps[i]['image'],
         maps[i]['CreatedDate'],
         id: maps[i]['id'],
       );
@@ -620,5 +634,124 @@ class OfflineDbHelper {
     final db = await database;
 
     await db.delete(TABLE_INQUIRY_PRODUCT);
+  }
+
+  ///Temporary Inquiry Product CRUD TABLE_TEMP_INQUIRY_PRODUCT
+
+  Future<int> insertTempInquiryProduct(TempInquiryProductModel model) async {
+    final db = await database;
+
+    return await db.insert(
+      TABLE_TEMP_INQUIRY_PRODUCT,
+      model.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<TempInquiryProductModel>> getAllCustomerTempInquiryProduct(
+      int custId) async {
+    final db = await database;
+
+    //final List<Map<String, dynamic>> maps = await db.query(TABLE_CART_PRODUCT);
+    List<Map<String, dynamic>> maps = await db.query(TABLE_TEMP_INQUIRY_PRODUCT,
+        where: 'CustID LIKE ?', whereArgs: ['%$custId%']);
+
+    return List.generate(maps.length, (i) {
+      return TempInquiryProductModel(
+        maps[i]['CustID'],
+        maps[i]['Inq_id'],
+        maps[i]['ProductName'],
+        maps[i]['Qty'],
+        maps[i]['UnitPrice'],
+        maps[i]['Specification'],
+        maps[i]['Unit'],
+        maps[i]['NetAmount'],
+        maps[i]['CreatedDate'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<List<TempInquiryProductModel>> getAllTempInquiryProduct() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps =
+        await db.query(TABLE_TEMP_INQUIRY_PRODUCT);
+    /* List<Map<String, dynamic>> maps = await db.query(TABLE_TEMP_INQUIRY_PRODUCT,
+        where: 'Inq_id LIKE ?', whereArgs: ['%$inqID%']);*/
+
+    return List.generate(maps.length, (i) {
+      return TempInquiryProductModel(
+        maps[i]['CustID'],
+        maps[i]['Inq_id'],
+        maps[i]['ProductName'],
+        maps[i]['Qty'],
+        maps[i]['UnitPrice'],
+        maps[i]['Specification'],
+        maps[i]['Unit'],
+        maps[i]['NetAmount'],
+        maps[i]['CreatedDate'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<void> updateTempInquiryProduct(TempInquiryProductModel model) async {
+    final db = await database;
+
+    await db.update(
+      TABLE_TEMP_INQUIRY_PRODUCT,
+      model.toJson(),
+      where: 'id = ?',
+      whereArgs: [model.id],
+    );
+  }
+
+  Future<void> deleteTempInquiryProduct(int id) async {
+    final db = await database;
+
+    await db.delete(
+      TABLE_TEMP_INQUIRY_PRODUCT,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> deleteTempInquiryHeaderWithProduct(int id) async {
+    final db = await database;
+
+    await db.delete(
+      TABLE_TEMP_INQUIRY_PRODUCT,
+      where: 'Inq_id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<TempInquiryProductModel>> searchTempInquiryProduct(
+      String keyWord) async {
+    final db = await database;
+    List<Map<String, dynamic>> maps = await db.query(TABLE_TEMP_INQUIRY_PRODUCT,
+        where: 'ProductName LIKE ?', whereArgs: ['%$keyWord%']);
+
+    return List.generate(maps.length, (i) {
+      return TempInquiryProductModel(
+        maps[i]['CustID'],
+        maps[i]['Inq_id'],
+        maps[i]['ProductName'],
+        maps[i]['Qty'],
+        maps[i]['UnitPrice'],
+        maps[i]['Specification'],
+        maps[i]['Unit'],
+        maps[i]['NetAmount'],
+        maps[i]['CreatedDate'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<void> deleteAllTempInquiryProduct() async {
+    final db = await database;
+
+    await db.delete(TABLE_TEMP_INQUIRY_PRODUCT);
   }
 }

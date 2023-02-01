@@ -1,4 +1,4 @@
-class InquiryProductModel {
+class TempInquiryProductModel {
   int id;
   int CustID;
   int Inq_id;
@@ -10,7 +10,7 @@ class InquiryProductModel {
   String NetAmount;
   String CreatedDate;
 
-  InquiryProductModel(
+  TempInquiryProductModel(
       this.CustID,
       this.Inq_id,
       this.ProductName,
@@ -39,6 +39,6 @@ class InquiryProductModel {
 
   @override
   String toString() {
-    return 'PlacedProductModel{id: $id, CustID:$CustID, Inq_id:$Inq_id, ProductName: $ProductName, Qty:$Qty, UnitPrice: $UnitPrice, Specification: $Specification, Unit: $Unit, NetAmount:$NetAmount, CreatedDate: $CreatedDate}';
+    return 'TempInquiryProductModel{id: $id, CustID:$CustID, Inq_id:$Inq_id, ProductName: $ProductName, Qty:$Qty, UnitPrice: $UnitPrice, Specification: $Specification, Unit: $Unit, NetAmount:$NetAmount, CreatedDate: $CreatedDate}';
   }
 }

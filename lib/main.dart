@@ -9,6 +9,7 @@ import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquir
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_list.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_add_edit.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_list.dart';
+import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_product/general_product_search.dart';
 import 'package:minicrm/screens/dashboard/employee/product_master/master_product_add_edit.dart';
 import 'package:minicrm/screens/dashboard/employee/product_master/master_product_list.dart';
 import 'package:minicrm/screens/login_screen/login_screen.dart';
@@ -70,7 +71,11 @@ class MyApp extends StatefulWidget {
 
       case InquiryProductAddEdit.routeName:
         return getMaterialPageRoute(InquiryProductAddEdit(settings.arguments));
-      //
+
+      case GeneralProductSearchScreen.routeName:
+        return getMaterialPageRoute(
+            GeneralProductSearchScreen(settings.arguments));
+      //GeneralProductSearchScreen
       default:
         return null;
     }

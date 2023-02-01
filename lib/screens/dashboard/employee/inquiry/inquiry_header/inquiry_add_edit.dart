@@ -3,14 +3,16 @@ import 'package:intl/intl.dart';
 import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
 import 'package:minicrm/Database/table_models/inquiry/inquiry_header.dart';
+import 'package:minicrm/Database/table_models/inquiry/inquiry_product.dart';
+import 'package:minicrm/Database/table_models/inquiry/temp_inquiry_product.dart';
 import 'package:minicrm/resource/color_resource.dart';
-import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
 import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/general_customer_search.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_list.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_list.dart';
 import 'package:minicrm/utils/general_model/all_name_id.dart';
 import 'package:minicrm/utils/general_utils.dart';
+import 'package:minicrm/utils/shared_pref_helper.dart';
 
 class AddUpdateInquiryArguments {
   // SearchDetails editModel;
@@ -314,17 +316,18 @@ class _InquiryAddEditState extends State<InquiryAddEdit> {
 
           // navigateTo(context, InquiryProductListScreen.routeName)
 
-          int CustIDD = int.parse(edt_customerID.text.toString() == ""
+          /*int CustIDD = int.parse(edt_customerID.text.toString() == ""
               ? 0
-              : edt_customerID.text.toString());
+              : edt_customerID.text.toString());*/
+
           navigateTo(context, InquiryProductListScreen.routeName,
-                  arguments:
-                      AddUpdateInquiryProductListArguments(CustIDD, InqID: 0))
+                  arguments: AddUpdateInquiryProductListArguments(0, InqID: 0))
               .then((value) {
             if (value != null) {
               CustomerModel customerModel = value;
               edt_customerName.text = customerModel.CustomerName;
               edt_customerID.text = customerModel.id.toString();
+              setState(() {});
             }
 
             // getDetails();
@@ -366,33 +369,16 @@ class _InquiryAddEditState extends State<InquiryAddEdit> {
       onTap: () {
         if (edt_customerName.text != "") {
           if (edt_Priority.text != "") {
-            if (edt_mobileNo1.text != "") {
-              if (edt_email.text != "") {
-                if (edt_password.text != "") {
-                  if (edt_Priority.text != "") {
-                    AddUpdateCustomer();
-                  } else {
-                    showCommonDialogWithSingleOption(
-                        context, "Customer Type is Required !",
-                        positiveButtonTitle: "OK");
-                  }
-                } else {
-                  showCommonDialogWithSingleOption(
-                      context, "Password is Required !",
-                      positiveButtonTitle: "OK");
-                }
-              } else {
-                showCommonDialogWithSingleOption(context, "Email is Required !",
-                    positiveButtonTitle: "OK");
-              }
+            if (edt_Status.text != "") {
+              AddUpdateCustomer();
             } else {
               showCommonDialogWithSingleOption(
-                  context, "MobileNo1 is Required !",
+                  context, "Customer Status is Required !",
                   positiveButtonTitle: "OK");
             }
           } else {
             showCommonDialogWithSingleOption(
-                context, "Customer Type is Required !",
+                context, "Priority Type is Required !",
                 positiveButtonTitle: "OK");
           }
         } else {
@@ -503,20 +489,92 @@ class _InquiryAddEditState extends State<InquiryAddEdit> {
     final now = new DateTime.now();
     String currentDate = DateFormat.yMd().add_jm().format(now); // 28/03/2020
 
+    int CustID = int.parse(edt_customerID.text);
+    String LeadNo = "";
+    String CustomerName = edt_customerName.text;
+    String LeadPriority = edt_Priority.text;
+    String LeadStatus = edt_Status.text;
+    String LeadSource = edt_Source.text;
+    String Description = edt_Description.text;
+    String CloserReason = edt_CloserReason.text;
+    // String CreatedDate;
+    String CreatedBy = SharedPrefHelper.instance
+        .getInt(SharedPrefHelper.IS_LOGGED_IN_USER_ID)
+        .toString();
+    String Customer_type =
+        SharedPrefHelper.instance.getString(SharedPrefHelper.IS_LOGGED_IN);
+
+    int returnNo = 0;
+
     if (_isForUpdate == true) {
+      returnNo = _editModel.id;
       await OfflineDbHelper.getInstance()
-          .insertInquiryHeader(UpdatecustomerModel);
+          .updateInquiryHeader(InquiryHeaderModel(
+        CustID,
+        LeadNo,
+        CustomerName,
+        LeadPriority,
+        LeadStatus,
+        LeadSource,
+        Description,
+        CloserReason,
+        currentDate,
+        CreatedBy,
+        Customer_type,
+        id: _editModel.id,
+      ));
     } else {
       // await OfflineDbHelper.getInstance().insertCustomer(customerModel);
+
+      returnNo = await OfflineDbHelper.getInstance().insertInquiryHeader(
+          InquiryHeaderModel(
+              CustID,
+              LeadNo,
+              CustomerName,
+              LeadPriority,
+              LeadStatus,
+              LeadSource,
+              Description,
+              CloserReason,
+              currentDate,
+              CreatedBy,
+              Customer_type));
+      print("ReturnInquiryNo" + returnNo.toString());
     }
 
-    navigateTo(context, CustomerListScreen.routeName);
+    List<TempInquiryProductModel> arr_temp_productList =
+        await OfflineDbHelper.getInstance().getAllTempInquiryProduct();
+    await OfflineDbHelper.getInstance().deleteInquiryProductwithCustomerID(
+        int.parse(edt_customerID.text.toString()));
+
+    for (int i = 0; i < arr_temp_productList.length; i++) {
+      InquiryProductModel tempInquiryProductModel = InquiryProductModel(
+          int.parse(edt_customerID.text.toString()),
+          returnNo,
+          arr_temp_productList[i].ProductName,
+          arr_temp_productList[i].Qty,
+          arr_temp_productList[i].UnitPrice,
+          arr_temp_productList[i].Specification,
+          arr_temp_productList[i].Unit,
+          arr_temp_productList[i].NetAmount,
+          arr_temp_productList[i].CreatedDate);
+
+      await OfflineDbHelper.getInstance()
+          .insertInquiryProduct(tempInquiryProductModel);
+    }
+
+    navigateTo(context, InquiryListScreen.routeName);
   }
 
   void fillData() {
     edt_customerName.text = _editModel.CustomerName;
+    edt_customerID.text = _editModel.CustID.toString();
 
-    edt_customerName.text = _editModel.CustomerName;
+    edt_Priority.text = _editModel.LeadPriority;
+
+    edt_Status.text = _editModel.LeadStatus;
+    edt_Description.text = _editModel.Description;
+    getdetailsFromInquiryProduct();
   }
 
   Future<bool> _onBackPressed() {
@@ -550,6 +608,36 @@ class _InquiryAddEditState extends State<InquiryAddEdit> {
         all_name_id.Name1 = "Low Budget";
       }
       arr_ALL_Name_ID_For_CloserReason.add(all_name_id);
+    }
+  }
+
+  void getdetailsFromInquiryProduct() {
+    setDetailstoTempProductFromInquiryProduct();
+  }
+
+  setDetailstoTempProductFromInquiryProduct() async {
+    List<InquiryProductModel> arr_inquiry_productList =
+        await OfflineDbHelper.getInstance().getAllInquiryProduct(_editModel.id);
+
+    if (arr_inquiry_productList.isNotEmpty) {
+      for (int i = 0; i < arr_inquiry_productList.length; i++) {
+        print(
+            "dsjdfj" + "  Product : " + arr_inquiry_productList[i].ProductName);
+        TempInquiryProductModel tempInquiryProductModel =
+            TempInquiryProductModel(
+                arr_inquiry_productList[i].CustID,
+                arr_inquiry_productList[i].Inq_id,
+                arr_inquiry_productList[i].ProductName,
+                arr_inquiry_productList[i].Qty,
+                arr_inquiry_productList[i].UnitPrice,
+                arr_inquiry_productList[i].Specification,
+                arr_inquiry_productList[i].Unit,
+                arr_inquiry_productList[i].NetAmount,
+                arr_inquiry_productList[i].CreatedDate);
+
+        await OfflineDbHelper.getInstance()
+            .insertTempInquiryProduct(tempInquiryProductModel);
+      }
     }
   }
 }

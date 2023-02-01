@@ -73,6 +73,8 @@ class _InquiryListScreenState extends State<InquiryListScreen> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             // Add your onPressed code here!
+            await OfflineDbHelper.getInstance().deleteAllTempInquiryProduct();
+
             navigateTo(context, InquiryAddEdit.routeName);
           },
           child: const Icon(Icons.add),
@@ -89,6 +91,7 @@ class _InquiryListScreenState extends State<InquiryListScreen> {
   void getDetails() async {
     arr_CustomerList.clear();
     temparr_CustomerList.clear();
+
     arr_CustomerList =
         await OfflineDbHelper.getInstance().getAllInquiryHeader();
     temparr_CustomerList =
@@ -175,7 +178,7 @@ class _InquiryListScreenState extends State<InquiryListScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(
-                              Icons.mobile_friendly,
+                              Icons.bubble_chart_rounded,
                               color: Color(0xff108dcf),
                               size: 24,
                             ),
@@ -184,7 +187,7 @@ class _InquiryListScreenState extends State<InquiryListScreen> {
                         Row(
                           children: [
                             Text(
-                              model.LeadNo,
+                              "INQ-" + model.id.toString(),
                               style: TextStyle(
                                 color: colorPrimary,
                                 fontSize: _fontSize_Title,
@@ -538,7 +541,10 @@ class _InquiryListScreenState extends State<InquiryListScreen> {
                         width: 10,
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          await OfflineDbHelper.getInstance()
+                              .deleteAllTempInquiryProduct();
+
                           navigateTo(context, InquiryAddEdit.routeName,
                                   arguments: AddUpdateInquiryArguments(model))
                               .then((value) {
@@ -575,6 +581,7 @@ class _InquiryListScreenState extends State<InquiryListScreen> {
                               .deleteInquiryHeader(model.id);
                           await OfflineDbHelper.getInstance()
                               .deleteInquiryHeaderWithProduct(model.id);
+
                           getDetails();
                         },
                         child: Row(

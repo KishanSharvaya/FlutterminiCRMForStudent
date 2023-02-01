@@ -5,13 +5,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:minicrm/Database/table_models/inquiry/inquiry_product.dart';
+import 'package:minicrm/Database/offline_db_helper.dart';
+import 'package:minicrm/Database/table_models/inquiry/temp_inquiry_product.dart';
 import 'package:minicrm/Database/table_models/product/genral_product_table.dart';
 import 'package:minicrm/resource/color_resource.dart';
-import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
-import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_product/inquiry_product_list.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_product/general_product_search.dart';
-import 'package:minicrm/screens/dashboard/employee/product_master/master_product_list.dart';
 import 'package:minicrm/utils/full_screen_image.dart';
 import 'package:minicrm/utils/general_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,7 +17,7 @@ import 'package:permission_handler/permission_handler.dart';
 class AddUpdateInquiryProductArguments {
   // SearchDetails editModel;
 
-  InquiryProductModel editModel;
+  TempInquiryProductModel editModel;
   AddUpdateInquiryProductArguments(this.editModel);
 }
 
@@ -37,7 +35,7 @@ class InquiryProductAddEdit extends StatefulWidget {
 class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
   bool _obscuredText = true;
 
-  InquiryProductModel _editModel;
+  TempInquiryProductModel _editModel;
   bool _isForUpdate = false;
 
   TextEditingController edt_ProductID = TextEditingController();
@@ -54,6 +52,7 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
   String ImageURLFromListing = "";
 
   Uint8List _bytesImage;
+  bool isProductExist = false;
 
   @override
   void initState() {
@@ -80,60 +79,45 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Product Add Edit"),
-          actions: [
-            InkWell(
-                onTap: () {
-                  navigateTo(context, EmployeeDashBoard.routeName,
-                      clearAllStack: true);
-                },
-                child: Icon(Icons.home)),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Product Add Edit"),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            ProductName(),
+            SizedBox(
+              height: 20,
+            ),
+            Unit(),
+            SizedBox(
+              height: 20,
+            ),
+            QTY(),
+            SizedBox(
+              height: 20,
+            ),
+            UnitPrice(),
+            SizedBox(
+              height: 20,
+            ),
+            NetAmount(),
+            SizedBox(
+              height: 20,
+            ),
+            Specification(),
+            SizedBox(
+              height: 20,
+            ),
+            Submit(context),
+            SizedBox(
+              height: 20,
+            ),
           ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              ProductName(),
-              SizedBox(
-                height: 20,
-              ),
-              Unit(),
-              SizedBox(
-                height: 20,
-              ),
-              QTY(),
-              SizedBox(
-                height: 20,
-              ),
-              UnitPrice(),
-              SizedBox(
-                height: 20,
-              ),
-              NetAmount(),
-              SizedBox(
-                height: 20,
-              ),
-              Specification(),
-              SizedBox(
-                height: 20,
-              ),
-              uploadImage(context),
-              SizedBox(
-                height: 20,
-              ),
-              Submit(),
-              SizedBox(
-                height: 20,
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -142,19 +126,21 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
   Widget ProductName() {
     return InkWell(
       onTap: () {
-        navigateTo(context, GeneralProductSearchScreen.routeName,
-                arguments: AddUpdateGeneralProductSearchArguments("model"))
-            .then((value) {
-          if (value != null) {
-            ProductModel productModel = value;
-            edt_ProductName.text = productModel.ProductName;
-            edt_ProductID.text = productModel.id.toString();
-            edt_Unit.text = productModel.Unit;
-            edt_UnitPrice.text = productModel.UnitPrice;
-          }
+        if (_isForUpdate == false) {
+          navigateTo(context, GeneralProductSearchScreen.routeName,
+                  arguments: AddUpdateGeneralProductSearchArguments("model"))
+              .then((value) {
+            if (value != null) {
+              ProductModel productModel = value;
+              edt_ProductName.text = productModel.ProductName;
+              edt_ProductID.text = productModel.id.toString();
+              edt_Unit.text = productModel.Unit;
+              edt_UnitPrice.text = productModel.UnitPrice;
+            }
 
-          // getDetails();
-        });
+            // getDetails();
+          });
+        }
       },
       child: Container(
         margin: EdgeInsets.only(left: 20, right: 20),
@@ -211,7 +197,7 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
       child: TextField(
         controller: edt_QTY,
         textInputAction: TextInputAction.next,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
+        keyboardType: TextInputType.number,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: 'Quantity',
@@ -253,20 +239,14 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
     );
   }
 
-  Widget Submit() {
+  Widget Submit(BuildContext context123) {
     return InkWell(
       onTap: () {
         if (edt_ProductName.text != "") {
           if (edt_Unit.text != "") {
             if (edt_UnitPrice.text != "") {
               if (edt_Specification.text != "") {
-                if (_bytesImage != null) {
-                  AddUpdateCustomer();
-                } else {
-                  showCommonDialogWithSingleOption(
-                      context, "Product Image is Required !",
-                      positiveButtonTitle: "OK");
-                }
+                AddUpdateCustomer(context123);
               } else {
                 showCommonDialogWithSingleOption(
                     context, "Specification is Required !",
@@ -313,45 +293,64 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
     );
   }
 
-  AddUpdateCustomer() async {
+  AddUpdateCustomer(BuildContext context1234) async {
     final now = new DateTime.now();
     String currentDate = DateFormat.yMd().add_jm().format(now); // 28/03/2020
 
+    await getInquiryProductDetails();
+
     if (_isForUpdate == true) {
-      /* InquiryProductModel UpdatecustomerModel = InquiryProductModel(
+      TempInquiryProductModel UpdatecustomerModel = TempInquiryProductModel(
+          0,
+          0,
           edt_ProductName.text,
+          int.parse(edt_QTY.text),
           edt_UnitPrice.text,
           edt_Specification.text,
           edt_Unit.text,
-          _bytesImage,
+          edt_NetAmount.text,
           currentDate,
-          id: _editModel.id);*/
+          id: _editModel.id);
 
-      /* await OfflineDbHelper.getInstance()
-          .updateGeneralProduct(UpdatecustomerModel);*/
+      await OfflineDbHelper.getInstance()
+          .updateTempInquiryProduct(UpdatecustomerModel);
+      Navigator.of(context).pop();
     } else {
-      /*  InquiryProductModel customerModel = InquiryProductModel(
-          edt_ProductName.text,
-          edt_UnitPrice.text,
-          edt_Specification.text,
-          edt_Unit.text,
-          _bytesImage,
-          currentDate);*/
+      if (isProductExist == false) {
+        TempInquiryProductModel UpdatecustomerModel = TempInquiryProductModel(
+            0,
+            0,
+            edt_ProductName.text,
+            int.parse(edt_QTY.text),
+            edt_UnitPrice.text,
+            edt_Specification.text,
+            edt_Unit.text,
+            edt_NetAmount.text,
+            currentDate);
 
-/*
-      await OfflineDbHelper.getInstance().insertInquiryProduct(customerModel);
-*/
+        await OfflineDbHelper.getInstance()
+            .insertTempInquiryProduct(UpdatecustomerModel);
+        Navigator.of(context).pop();
+      } else {
+        showCommonDialogWithSingleOption(
+            context1234, "Duplicate Product Not Allowed..!!",
+            positiveButtonTitle: "OK");
+      }
     }
 
-    navigateTo(context, InquiryProductListScreen.routeName);
+    // ignore: use_build_context_synchronously
+
+    // navigateTo(context, InquiryProductListScreen.routeName);
   }
 
   void fillData() {
     edt_ProductName.text = _editModel.ProductName;
     edt_Unit.text = _editModel.Unit;
     edt_UnitPrice.text = _editModel.UnitPrice;
+    edt_QTY.text = _editModel.Qty.toString();
+    edt_NetAmount.text = _editModel.NetAmount.toString();
+
     edt_Specification.text = _editModel.Specification;
-    _bytesImage = _editModel.image;
   }
 
   void checkPhotoPermissionStatus() async {
@@ -506,11 +505,6 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
     );
   }
 
-  Future<bool> _onBackPressed() {
-    navigateTo(context, GeneralProductListScreen.routeName,
-        clearAllStack: true);
-  }
-
   calculateamount() {
     double Qty = 0.00;
     double UnitPrice = 0.00;
@@ -523,6 +517,27 @@ class _InquiryProductAddEditState extends State<InquiryProductAddEdit> {
         : double.parse(edt_UnitPrice.text);
     NetAmt = Qty * UnitPrice;
     edt_NetAmount.text = NetAmt.toStringAsFixed(2);
+    setState(() {});
+  }
+
+  getInquiryProductDetails() async {
+    List<TempInquiryProductModel> arr_tempList =
+        await OfflineDbHelper.getInstance().getAllTempInquiryProduct();
+
+    if (arr_tempList.isNotEmpty) {
+      for (int i = 0; i < arr_tempList.length; i++) {
+        // print("sdsdfdf"+ "TableProductID :" +  )
+
+        if (arr_tempList[i].ProductName.toString() == edt_ProductName.text) {
+          isProductExist = true;
+          break;
+        } else {
+          isProductExist = false;
+        }
+      }
+    } else {
+      isProductExist = false;
+    }
     setState(() {});
   }
 }
