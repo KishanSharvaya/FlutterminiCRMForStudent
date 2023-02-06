@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:minicrm/Database/table_models/customer/customer_tabel.dart';
+import 'package:minicrm/Database/table_models/daily_activity/daily_activity_table.dart';
+import 'package:minicrm/Database/table_models/followup/followup_tabel.dart';
 import 'package:minicrm/Database/table_models/inquiry/inquiry_header.dart';
 import 'package:minicrm/Database/table_models/inquiry/inquiry_product.dart';
 import 'package:minicrm/Database/table_models/inquiry/temp_inquiry_product.dart';
@@ -21,11 +23,13 @@ class OfflineDbHelper {
   static const TABLE_INQUIRY_HEADER = "inquiry_header";
   static const TABLE_INQUIRY_PRODUCT = "inquiry_product";
   static const TABLE_TEMP_INQUIRY_PRODUCT = "temp_inquiry_product";
+  static const TABLE_FOLLOWUP = "followup";
+  static const TABLE_DAILY_ACTIVITY = "daily_activity";
 
   static createInstance() async {
     _offlineDbHelper = OfflineDbHelper();
     database = await openDatabase(join(await getDatabasesPath(), 'miniCRM.db'),
-        onCreate: (db, version) => _createDb(db), version: 7);
+        onCreate: (db, version) => _createDb(db), version: 9);
   }
 
   static void _createDb(Database db) {
@@ -53,6 +57,14 @@ class OfflineDbHelper {
     );
     db.execute(
       'CREATE TABLE $TABLE_TEMP_INQUIRY_PRODUCT(id INTEGER PRIMARY KEY AUTOINCREMENT, CustID INTEGER, Inq_id  INTEGER, ProductName TEXT, Qty INTEGER , UnitPrice TEXT , Specification TEXT , Unit TEXT , NetAmount TEXT , CreatedDate TEXT)',
+    );
+
+    db.execute(
+      'CREATE TABLE $TABLE_FOLLOWUP(id INTEGER PRIMARY KEY AUTOINCREMENT, CustomerName TEXT , CustID INTEGER , FollowUpType TEXT , Priority TEXT , InqNo TEXT , MeetingNotes TEXT , NextFollowupDate TEXT , InquiryStatus TEXT , CloserReason TEXT , image BLOB , CreatedDate TEXT , CreatedBy TEXT )',
+    );
+
+    db.execute(
+      'CREATE TABLE $TABLE_DAILY_ACTIVITY(id INTEGER PRIMARY KEY AUTOINCREMENT, CreatedDate TEXT , WorkingNotes INTEGER , TypeOfWork TEXT , WorkingHours TEXT , CreatedBy TEXT )',
     );
   }
 
@@ -214,6 +226,248 @@ class OfflineDbHelper {
     final db = await database;
 
     await db.delete(TABLE_CUSTOMER);
+  }
+
+  ///Here Followup Tabel Implimentation
+  Future<int> insertFollowup(FollowupModel model) async {
+    final db = await database;
+
+    return await db.insert(
+      TABLE_FOLLOWUP,
+      model.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<FollowupModel>> getAllFollowup() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(TABLE_FOLLOWUP);
+
+    return List.generate(maps.length, (i) {
+      /* String CustomerName;
+  int CustID;
+  String FollowUpType;
+  String Priority;
+  String InqNo;
+  String MeetingNotes;
+  String NextFollowupDate;
+  String InquiryStatus;
+  String CloserReason;
+  Uint8List image;
+  String CreatedDate;
+  String CreatedBy;*/
+
+      return FollowupModel(
+        maps[i]['CustomerName'],
+        maps[i]['CustID'],
+        maps[i]['FollowUpType'],
+        maps[i]['Priority'],
+        maps[i]['InqNo'],
+        maps[i]['MeetingNotes'],
+        maps[i]['NextFollowupDate'],
+        maps[i]['InquiryStatus'],
+        maps[i]['CloserReason'],
+        maps[i]['image'],
+        maps[i]['CreatedDate'],
+        maps[i]['CreatedBy'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<void> updateFollowup(FollowupModel model) async {
+    final db = await database;
+
+    await db.update(
+      TABLE_FOLLOWUP,
+      model.toJson(),
+      where: 'id = ?',
+      whereArgs: [model.id],
+    );
+  }
+
+  Future<void> deleteFollowup(int id) async {
+    final db = await database;
+
+    await db.delete(
+      TABLE_FOLLOWUP,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<FollowupModel>> searchFollowup(String keyWord) async {
+    final db = await database;
+    List<Map<String, dynamic>> maps = await db.query(TABLE_FOLLOWUP,
+        where: 'CustomerName LIKE ?', whereArgs: ['%$keyWord%']);
+
+    return List.generate(maps.length, (i) {
+      /* String CustomerName;
+           String Source;
+           String MobileNo1;
+           String MobileNo2;
+           String Email;
+           String Password;
+           String Address;
+           String City;
+           String State;
+           String Country;
+           String Pincode;
+           String CustomerType;
+           String CreatedDate;*/
+
+      return FollowupModel(
+        maps[i]['CustomerName'],
+        maps[i]['CustID'],
+        maps[i]['FollowUpType'],
+        maps[i]['Priority'],
+        maps[i]['InqNo'],
+        maps[i]['MeetingNotes'],
+        maps[i]['NextFollowupDate'],
+        maps[i]['InquiryStatus'],
+        maps[i]['CloserReason'],
+        maps[i]['image'],
+        maps[i]['CreatedDate'],
+        maps[i]['CreatedBy'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<List<FollowupModel>> getOnlyFollowupDetails(int custid) async {
+    final db = await database;
+    List<Map<String, dynamic>> maps = await db
+        .query(TABLE_FOLLOWUP, where: 'id LIKE ?', whereArgs: ['%$custid%']);
+
+    return List.generate(maps.length, (i) {
+      /* String CustomerName;
+           String Source;
+           String MobileNo1;
+           String MobileNo2;
+           String Email;
+           String Password;
+           String Address;
+           String City;
+           String State;
+           String Country;
+           String Pincode;
+           String CustomerType;
+           String CreatedDate;*/
+
+      return FollowupModel(
+        maps[i]['CustomerName'],
+        maps[i]['CustID'],
+        maps[i]['FollowUpType'],
+        maps[i]['Priority'],
+        maps[i]['InqNo'],
+        maps[i]['MeetingNotes'],
+        maps[i]['NextFollowupDate'],
+        maps[i]['InquiryStatus'],
+        maps[i]['CloserReason'],
+        maps[i]['image'],
+        maps[i]['CreatedDate'],
+        maps[i]['CreatedBy'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<void> deleteAllFollowup() async {
+    final db = await database;
+
+    await db.delete(TABLE_FOLLOWUP);
+  }
+
+  ///Here Daily Acvtivity Tabel Implimentation
+  Future<int> insertDailyActivity(DailyActivityModel model) async {
+    final db = await database;
+
+    return await db.insert(
+      TABLE_DAILY_ACTIVITY,
+      model.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<DailyActivityModel>> getAllDailyActivity() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps =
+        await db.query(TABLE_DAILY_ACTIVITY);
+
+    return List.generate(maps.length, (i) {
+      return DailyActivityModel(
+        maps[i]['CreatedDate'],
+        maps[i]['WorkingNotes'],
+        maps[i]['TypeOfWork'],
+        maps[i]['WorkingHours'],
+        maps[i]['CreatedBy'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<void> updateDailyActivity(DailyActivityModel model) async {
+    final db = await database;
+
+    await db.update(
+      TABLE_DAILY_ACTIVITY,
+      model.toJson(),
+      where: 'id = ?',
+      whereArgs: [model.id],
+    );
+  }
+
+  Future<void> deleteDailyActivity(int id) async {
+    final db = await database;
+
+    await db.delete(
+      TABLE_DAILY_ACTIVITY,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<DailyActivityModel>> searchDailyActivity(String keyWord) async {
+    final db = await database;
+    List<Map<String, dynamic>> maps = await db.query(TABLE_DAILY_ACTIVITY,
+        where: 'CustomerName LIKE ?', whereArgs: ['%$keyWord%']);
+
+    return List.generate(maps.length, (i) {
+      return DailyActivityModel(
+        maps[i]['CreatedDate'],
+        maps[i]['WorkingNotes'],
+        maps[i]['TypeOfWork'],
+        maps[i]['WorkingHours'],
+        maps[i]['CreatedBy'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<List<DailyActivityModel>> getOnlyDailyActivityDetails(
+      int custid) async {
+    final db = await database;
+    List<Map<String, dynamic>> maps = await db.query(TABLE_DAILY_ACTIVITY,
+        where: 'id LIKE ?', whereArgs: ['%$custid%']);
+
+    return List.generate(maps.length, (i) {
+      return DailyActivityModel(
+        maps[i]['CreatedDate'],
+        maps[i]['WorkingNotes'],
+        maps[i]['TypeOfWork'],
+        maps[i]['WorkingHours'],
+        maps[i]['CreatedBy'],
+        id: maps[i]['id'],
+      );
+    });
+  }
+
+  Future<void> deleteAllDailyActivity() async {
+    final db = await database;
+
+    await db.delete(TABLE_DAILY_ACTIVITY);
   }
 
   /// General Product CRUD

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
+import 'package:minicrm/screens/dashboard/employee/daily_activity/activity_list.dart';
+import 'package:minicrm/screens/dashboard/employee/followup/followup_list_screen.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_list.dart';
 import 'package:minicrm/screens/dashboard/employee/product_master/master_product_list.dart';
 import 'package:minicrm/screens/login_screen/login_screen.dart';
@@ -90,8 +92,7 @@ class _EmployeeDashBoardState extends State<EmployeeDashBoard> {
                 Flexible(
                   child: InkWell(
                       onTap: () {
-                        showCommonDialogWithSingleOption(context, "Coming Soon",
-                            positiveButtonTitle: "OK");
+                        navigateTo(context, FollowupListScreen.routeName);
                       },
                       child: Column(
                         children: [
@@ -106,9 +107,7 @@ class _EmployeeDashBoardState extends State<EmployeeDashBoard> {
                 Flexible(
                   child: InkWell(
                       onTap: () {
-                        showCommonDialogWithSingleOption(context, "Coming Soon",
-                            positiveButtonTitle: "OK");
-                        // navigateTo(context, CustomerListScreen.routeName);
+                        navigateTo(context, DailyActivityListScreen.routeName);
                       },
                       child: Column(
                         children: [

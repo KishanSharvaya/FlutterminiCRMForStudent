@@ -3,7 +3,11 @@ import 'package:minicrm/Database/offline_db_helper.dart';
 import 'package:minicrm/screens/dashboard/customer/product_dashboard/customer_master_product_list.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_add_edit.dart';
 import 'package:minicrm/screens/dashboard/employee/customer/customer_list.dart';
+import 'package:minicrm/screens/dashboard/employee/daily_activity/activity_add_edit.dart';
+import 'package:minicrm/screens/dashboard/employee/daily_activity/activity_list.dart';
 import 'package:minicrm/screens/dashboard/employee/employee_dashboard.dart';
+import 'package:minicrm/screens/dashboard/employee/followup/followup_add_edit.dart';
+import 'package:minicrm/screens/dashboard/employee/followup/followup_list_screen.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/general_customer_search.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_add_edit.dart';
 import 'package:minicrm/screens/dashboard/employee/inquiry/inquiry_header/inquiry_list.dart';
@@ -75,7 +79,20 @@ class MyApp extends StatefulWidget {
       case GeneralProductSearchScreen.routeName:
         return getMaterialPageRoute(
             GeneralProductSearchScreen(settings.arguments));
-      //GeneralProductSearchScreen
+      //FollowupListScreen
+
+      case FollowupListScreen.routeName:
+        return getMaterialPageRoute(FollowupListScreen());
+      case FollowupAddEdit.routeName:
+        return getMaterialPageRoute(FollowupAddEdit(settings.arguments));
+
+      case DailyActivityListScreen.routeName:
+        return getMaterialPageRoute(DailyActivityListScreen());
+
+      case DailyActivityAddEdit.routeName:
+        return getMaterialPageRoute(DailyActivityAddEdit(settings.arguments));
+
+      //
       default:
         return null;
     }
