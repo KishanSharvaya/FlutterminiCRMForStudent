@@ -64,7 +64,7 @@ class OfflineDbHelper {
     );
 
     db.execute(
-      'CREATE TABLE $TABLE_DAILY_ACTIVITY(id INTEGER PRIMARY KEY AUTOINCREMENT, CreatedDate TEXT , WorkingNotes INTEGER , TypeOfWork TEXT , WorkingHours TEXT , CreatedBy TEXT )',
+      'CREATE TABLE $TABLE_DAILY_ACTIVITY(id INTEGER PRIMARY KEY AUTOINCREMENT, CreatedDate TEXT , WorkingNotes TEXT , TypeOfWork TEXT , WorkingHours TEXT , CreatedBy TEXT )',
     );
   }
 

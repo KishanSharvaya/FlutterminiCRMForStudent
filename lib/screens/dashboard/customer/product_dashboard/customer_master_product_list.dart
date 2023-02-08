@@ -146,7 +146,7 @@ class _CustomerDashBoardState extends State<CustomerDashBoard> {
                       Icon(
                           pageIndex == 3
                               ? Icons.person
-                              : Icons.person_2_outlined,
+                              : Icons.person,
                           size: 24,
                           color: colorWhite),
                       Text(

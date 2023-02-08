@@ -16,7 +16,7 @@ class DailyActivityModel {
     data['CreatedDate'] = this.CreatedDate;
     data['WorkingNotes'] = this.WorkingNotes;
     data['TypeOfWork'] = this.TypeOfWork;
-    data['WorkingHourse'] = this.WorkingHours;
+    data['WorkingHours'] = this.WorkingHours;
     data['CreatedBy'] = this.CreatedBy;
     return data;
   }

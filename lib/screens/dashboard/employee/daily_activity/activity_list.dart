@@ -75,7 +75,7 @@ class _DailyActivityListScreenState extends State<DailyActivityListScreen> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             // Add your onPressed code here!
-            navigateTo(context, FollowupAddEdit.routeName);
+            navigateTo(context, DailyActivityAddEdit.routeName);
           },
           child: const Icon(Icons.add),
           backgroundColor: colorPrimary,
@@ -494,7 +494,7 @@ class _DailyActivityListScreenState extends State<DailyActivityListScreen> {
     if (enteredKeyword.isNotEmpty) {
       List<DailyActivityModel> dummyListData = [];
       dummySearchList.forEach((item) {
-        if (item.WorkingNotes.toLowerCase()
+        if (item.TypeOfWork.toLowerCase()
             .contains(enteredKeyword.toLowerCase())) {
           dummyListData.add(item);
         }
